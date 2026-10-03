@@ -65,7 +65,7 @@ Gabi (team, Venezuelan) spoke 9 test phrases out loud into the live app (measure
 | Technician / cooperative promoter | Panel (`cooperativa.html`) | Reviews, validates or corrects reports; approves alerts |
 | Regional coordinator (cooperative / federation) | `modelo/entrenar.py` | Retrains the regional model pack with validated phrases and publishes it |
 
-The cooperative owns its data. Minimum infrastructure: a laptop or mini-PC at the office and an old Android phone as an SMS receiver (optional: small solar panel). Hosting cost is near zero because **all AI runs on the phone**; the website is only needed to install the app once (it can also be side-loaded from the promoter's laptop).
+The cooperative owns its data. Minimum infrastructure: a laptop or mini-PC at the office and an old Android phone as an SMS receiver (optional: small solar panel). Hosting cost is near zero because **all AI runs on the phone**; the website is only needed to install the app once (it could also be side-loaded from the promoter's laptop — not built yet).
 
 ![Architecture](arquitectura.png)
 
