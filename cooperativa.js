@@ -4,13 +4,14 @@ import { SINTOMAS } from './lexicon.js';
 const $ = (id) => document.getElementById(id);
 const DIA = 86400000;
 const UMBRAL = { reportes: 5, fincas: 3, dias: 14 };
-const COLOR = { roya: '#d9711c', broca: '#5b3a29', minador: '#8a6d1f', ojo_de_gallo: '#7b8794', mancha_hierro: '#8e2c48', muerte_descendente: '#4a4a4a', nutricion: '#d4b106', no_claro: '#b3261e' };
+const COLOR = { come_hojas: '#3d7a8a', roya: '#d9711c', broca: '#5b3a29', minador: '#8a6d1f', ojo_de_gallo: '#7b8794', mancha_hierro: '#8e2c48', muerte_descendente: '#4a4a4a', nutricion: '#d4b106', no_claro: '#b3261e' };
 const NOMBRE = Object.fromEntries(SINTOMAS.map((s) => [s.id, s.sencillo]));
 NOMBRE.no_claro = 'no queda claro (revisar)';
-const CORTO = { roya: 'roya', broca: 'broca', minador: 'minador', ojo_de_gallo: 'ojo de gallo', mancha_hierro: 'mancha de hierro', muerte_descendente: 'ramas secas', nutricion: 'hojas amarillas / poca carga', no_claro: 'no claro' };
+const CORTO = { come_hojas: 'hojas comidas (bachaco/gusanos)', roya: 'roya', broca: 'broca', minador: 'minador', ojo_de_gallo: 'ojo de gallo', mancha_hierro: 'mancha de hierro', muerte_descendente: 'ramas secas', nutricion: 'hojas amarillas / poca carga', no_claro: 'no claro' };
 
 // Mensaje para el agricultor: sencillo, sin términos técnicos, sin recetas de agroquímicos.
 const CONSEJO = {
+  come_hojas: 'Busque caminos de bachaco o gusanos cerca de las matas comidas y avísele al técnico antes de aplicar cualquier producto.',
   roya: 'Revise la parte de abajo de las hojas. Si ve polvillo naranja, anote cuántas matas y avísele al técnico. No aplique productos sin consultar.',
   broca: 'Recoja los granos caídos y los que tengan huequito, no los deje en el suelo. El técnico pasará por la zona.',
   minador: 'Fíjese si las manchas secas aumentan. El técnico revisará en su próxima visita.',

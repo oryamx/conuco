@@ -55,6 +55,12 @@ export const SINTOMAS = [
     ],
   },
   {
+    id: 'come_hojas',
+    tecnico: 'Daño por insectos que mastican la hoja (p. ej. bachaco / hormiga cortadora, gusanos)',
+    sencillo: 'hojas comidas, mordidas o cortadas por bichos',
+    patrones: [/comid/, /mordid/, /mordisque/, /bachac/, /hormig/, /cortad/, /se (las )?(estan )?comiendo/, /huecos? en las hojas/, /hojas? (picad|rot)/, /se (las )?llevan/],
+  },
+  {
     id: 'nutricion',
     tecnico: 'Posible deficiencia nutricional o de suelo (requiere revisión)',
     sencillo: 'hojas pálidas o amarillas parejas, matas débiles, poca carga',

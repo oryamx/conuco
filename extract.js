@@ -94,13 +94,13 @@ export function leerDeVuelta(r) {
   if (r.dias) partes.push(`desde hace unos ${r.dias} días`);
   if (r.clima_nombre) partes.push(r.clima_nombre.toLowerCase());
   let frase = `¿Entendí bien? ${partes.join(', ')}.`;
-  if (r.confianza === 'baja') frase += ' No estoy seguro. Voy a guardar tu nota de voz para que la escuche el técnico.';
+  if (r.confianza === 'baja') frase += ' No estoy seguro. Si lo confirmas, guardo tu reporte para que lo revise el técnico, o toca el dibujo que más se parezca.';
   else if (r.confianza === 'media') frase += ' No estoy del todo seguro; el técnico lo va a revisar.';
   return frase;
 }
 
 // Código corto para mandar por SMS cuando no hay datos (cabe en un SMS de 160 caracteres).
-const COD = { roya: 'RY', broca: 'BR', minador: 'MN', ojo_de_gallo: 'OG', mancha_hierro: 'MH', muerte_descendente: 'MD', nutricion: 'NU', no_claro: 'NC' };
+const COD = { come_hojas: 'CH', roya: 'RY', broca: 'BR', minador: 'MN', ojo_de_gallo: 'OG', mancha_hierro: 'MH', muerte_descendente: 'MD', nutricion: 'NU', no_claro: 'NC' };
 export function codigoSMS(r, perfil) {
   const fecha = new Date(r.fecha).toISOString().slice(2, 10).replace(/-/g, '');
   return [

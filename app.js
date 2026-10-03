@@ -201,7 +201,7 @@ $('btnNo').addEventListener('click', () => {
   hablar('Toca el dibujo que más se parece a lo que ves.');
 });
 
-const DIBUJOS = { roya: '🍂', broca: '🕳️', minador: '🔥', ojo_de_gallo: '⚪', mancha_hierro: '🎯', muerte_descendente: '🥀', nutricion: '🟡' };
+const DIBUJOS = { come_hojas: '🐜', roya: '🍂', broca: '🕳️', minador: '🔥', ojo_de_gallo: '⚪', mancha_hierro: '🎯', muerte_descendente: '🥀', nutricion: '🟡' };
 $('iconos').innerHTML = SINTOMAS.map((s) => `<button class="icono" data-id="${s.id}"><b>${DIBUJOS[s.id]}</b>${s.sencillo}</button>`).join('')
   + '<button class="icono" data-id="no_claro"><b>❓</b>Otra cosa / no sé</button>';
 $('iconos').addEventListener('click', (e) => {
