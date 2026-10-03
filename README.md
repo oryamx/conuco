@@ -23,6 +23,14 @@ Everyone builds AI that **talks to** farmers. Conuco is AI that **listens to** t
 
 Conuco **does not diagnose or prescribe**. It records what the person sees and tells a person. When it is not sure, it says so.
 
+## Two crops, two tiny model packs
+| Pack | Why | Categories (fixed list + "not sure") | Model size |
+|---|---|---|---|
+| ☕ Coffee | The World Bank brief's scenario; Venezuela's Andean smallholders | rust, berry borer, leaf miner, American leaf spot, brown eye spot, dieback, chewing insects (leaf-cutter ants), nutrition | ~130 KB |
+| 🌽 Maize | The most critical crop for food security in Venezuela; grown on almost every *conuco* | fall armyworm, root pests (white grubs / Diabrotica), damaged ears, stored-grain weevil, drought stress, nutrition, leaf spots | ~105 KB |
+
+The farmer picks what they grow when they register; if they name a crop in the sentence ("el maíz…"), Conuco switches pack automatically. Adding a crop = adding training phrases and running `python3 modelo/entrenar.py --cultivo <crop>`. Maize categories are deliberately conservative ("compatible with…, needs technician review").
+
 ## Why AI (and why a simpler tool would not do the job)
 An SMS form needs literacy and technical vocabulary. A farmer can say *"los bachacos dejaron las matas peladitas"*; only speech recognition + language understanding can turn that into *"chewing-insect damage (leaf-cutter ants)"* — and do it offline, on a phone that is charged a few hours a day.
 
@@ -54,7 +62,7 @@ The cooperative owns its data. Minimum infrastructure: a laptop or mini-PC at th
 | Piece | Technology | Where it runs |
 |---|---|---|
 | Voice → text | Whisper base/tiny (q8 quantized, ~80 / ~40 MB) via transformers.js + ONNX WebAssembly, in a Web Worker | Phone, offline |
-| Text → field record | **Our own classifier**: character n-gram TF-IDF + logistic regression, **~130 KB** (`modelo_conuco.json`), fixed list of 9 categories, confidence thresholds (≥70% sure, 45–70% "check", <45% "not sure → ask a person"); `lexicon.js` extracts plant part, extent, timing and weather and explains which words it recognized | Phone, offline |
+| Text → field record | **Our own classifiers**, one per crop: character n-gram TF-IDF + logistic regression, **~130 KB coffee / ~105 KB maize** (`modelo_conuco.json`, `modelo_maiz.json`), fixed list of categories, confidence thresholds (≥70% sure, 45–70% "check", <45% "not sure → ask a person"); `lexicon.js` extracts plant part, extent, timing and weather and explains which words it recognized | Phone, offline |
 | Speech recognition fixes | Small list of common mis-hearings of farm words (e.g. *"más ron"* → *"marrón"*), grows with real corrections | Phone |
 | Read-back | Web Speech API (system voice) | Phone, offline |
 | Photo (optional) | Compressed to 640 px JPEG (~40–80 KB) as **evidence for the technician** — not diagnosed by AI | Phone → cooperative |
@@ -73,8 +81,9 @@ In this prototype the "cooperative" is the panel on the same site (shared browse
 A model pack per region or language is ~130 KB — small enough to send over a weak connection. Whisper already covers Spanish accents across Latin America and ~99 languages; low-resource languages (e.g. Quechua, Wayuunaiki) would need Common Voice / MMS data.
 
 ## Data
-- `reportes_sinteticos.json` / `generar_sinteticos.py`: **synthetic** demo reports, labeled as such in the UI.
-- `modelo/frases.py`: **synthetic** training phrases written by the team (≈2,400 generated examples). To be replaced/extended with real reports confirmed by technicians.
+- `reportes_sinteticos.json` / `generar_sinteticos.py`: **synthetic** demo reports (coffee in the Andes, maize in Portuguesa), labeled as such in the UI.
+- Maize pests context: AgroDigital Venezuela (MINCYT), *Principales plagas*: fall armyworm, white grubs, Diabrotica, maize weevil.
+- `modelo/frases.py`: **synthetic** training phrases written by the team (≈2,400 coffee + ≈2,100 maize generated examples). To be replaced/extended with real reports confirmed by technicians.
 - The farmer vocabulary is a **hackathon draft**: it must be validated with coffee farmers and agronomists in each area.
 - Problem context: Venezuelan electricity crisis 2026 (Infobae, Sep 2026); coffee yields 4–8 qq/ha vs 25–30 ideal and production covering ~21% of national consumption (Fedeagro via Crónica Uno). Venezuelan production figures are disputed between official and independent sources.
 
