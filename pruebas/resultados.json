@@ -1,0 +1,133 @@
+{
+ "fecha": "2026-10-03T22:48:20.918Z",
+ "pasan": 21,
+ "total": 21,
+ "resultados": [
+  {
+   "id": "T1",
+   "nombre": "XSS almacenado: texto malicioso del agricultor en el panel",
+   "paso": true,
+   "detalle": "ejecutado=no · mostrado como texto=true"
+  },
+  {
+   "id": "T1b",
+   "nombre": "Sin errores de JavaScript al procesar el ataque",
+   "paso": true,
+   "detalle": ""
+  },
+  {
+   "id": "T2",
+   "nombre": "Registros manipulados (id, síntoma, zona, foto, fecha) no se muestran ni ejecutan",
+   "paso": true,
+   "detalle": "filas inválidas mostradas=0"
+  },
+  {
+   "id": "T3",
+   "nombre": "Datos corruptos en el almacenamiento no rompen la app ni el panel",
+   "paso": true,
+   "detalle": ""
+  },
+  {
+   "id": "T4",
+   "nombre": "SMS legítimo con firma válida se acepta",
+   "paso": true,
+   "detalle": "CNC1 F125 BO 261003 CAF RY E0 D0 - C3 OK MFC1181FF"
+  },
+  {
+   "id": "T5",
+   "nombre": "SMS repetido (ataque de repetición) se rechaza",
+   "paso": true,
+   "detalle": "SMS repetido "
+  },
+  {
+   "id": "T6",
+   "nombre": "SMS modificado (cambia roya→broca, misma firma) se rechaza",
+   "paso": true,
+   "detalle": ""
+  },
+  {
+   "id": "T7",
+   "nombre": "SMS de una finca no registrada se rechaza",
+   "paso": true,
+   "detalle": "finca no registrada"
+  },
+  {
+   "id": "T8",
+   "nombre": "SMS con zona cambiada (otra zona) se rechaza",
+   "paso": true,
+   "detalle": ""
+  },
+  {
+   "id": "T9",
+   "nombre": "SMS malformado / con código / demasiado largo se rechaza sin ejecutar nada",
+   "paso": true,
+   "detalle": ""
+  },
+  {
+   "id": "T9b",
+   "nombre": "Todos los rechazos quedan en la bitácora de auditoría",
+   "paso": true,
+   "detalle": "rechazados=5"
+  },
+  {
+   "id": "T10",
+   "nombre": "Una finca que manda 10 reportes no infla un brote (12 reportes, 3 fincas → sin alerta)",
+   "paso": true,
+   "detalle": ""
+  },
+  {
+   "id": "T10b",
+   "nombre": "6 reportes de fincas NO registradas no generan alerta",
+   "paso": true,
+   "detalle": ""
+  },
+  {
+   "id": "T10c",
+   "nombre": "Control positivo: 5 fincas registradas distintas SÍ generan alerta",
+   "paso": true,
+   "detalle": ""
+  },
+  {
+   "id": "T11",
+   "nombre": "Foto re-codificada a JPEG ≤640 px (elimina EXIF/ubicación, limita tamaño)",
+   "paso": true,
+   "detalle": "3 KB en base64"
+  },
+  {
+   "id": "T12",
+   "nombre": "Texto de más de 500 caracteres se recorta al recibirlo",
+   "paso": true,
+   "detalle": "largo guardado=500"
+  },
+  {
+   "id": "T13",
+   "nombre": "Llamada desde número NO registrado: reporte llega pero marcado como no registrado",
+   "paso": true,
+   "detalle": "[[\"cogollero\",false]]"
+  },
+  {
+   "id": "T13b",
+   "nombre": "Si la IA no entiende, el agricultor elige con el teclado (funciona aunque falle la voz)",
+   "paso": true,
+   "detalle": "estado=menu_sintomas → mazorca, registrada=true"
+  },
+  {
+   "id": "T14",
+   "nombre": "Política CSP bloquea scripts en línea y de dominios no permitidos",
+   "paso": true,
+   "detalle": ""
+  },
+  {
+   "id": "T15",
+   "nombre": "El motor de voz solo carga modelos de la lista permitida (versión fija)",
+   "paso": true,
+   "detalle": "Error: modelo no permitido"
+  },
+  {
+   "id": "T16",
+   "nombre": "Exportación para reentrenar: una línea por frase, sin \"|\" ni saltos inyectados",
+   "paso": true,
+   "detalle": "1 línea(s)"
+  }
+ ]
+}
