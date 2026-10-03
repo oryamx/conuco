@@ -1,6 +1,6 @@
 // Service worker: guarda la app en el teléfono para que abra sin internet.
 // Los modelos de IA los guarda transformers.js en su propia caché ("transformers-cache").
-const VERSION = 'conuco-v9';
+const VERSION = 'conuco-v10';
 const CDN = 'conuco-cdn';
 const ARCHIVOS = [
   './', 'index.html', 'cooperativa.html', 'estilo.css', 'manifest.webmanifest', 'conuco.svg',
@@ -23,9 +23,10 @@ self.addEventListener('fetch', (e) => {
     return;
   }
   if (url.origin !== location.origin) return;
-  // Red primero (para tener lo más nuevo), caché si no hay señal.
+  // Red primero (revalidando, para no mezclar archivos viejos y nuevos), caché si no hay señal.
+  const red = e.request.mode === 'navigate' ? fetch(e.request) : fetch(e.request.url, { cache: 'no-cache', credentials: 'same-origin' });
   e.respondWith(
-    fetch(e.request).then((r) => { const copia = r.clone(); caches.open(VERSION).then((c) => c.put(e.request, copia)); return r; })
+    red.then((r) => { const copia = r.clone(); caches.open(VERSION).then((c) => c.put(e.request, copia)); return r; })
       .catch(() => caches.match(e.request, { ignoreSearch: true }))
   );
 });
