@@ -1,4 +1,4 @@
-import { SINTOMAS, CULTIVOS, PARTES, EXTENSION, CLIMA, extraerDias } from './lexicon.js';
+import { SINTOMAS, sintomasDe, CULTIVOS, PARTES, EXTENSION, CLIMA, extraerDias } from './lexicon.js';
 import { clasificar } from './clasificador.js';
 
 // Umbrales de confianza del clasificador (probabilidad de la clase ganadora)
@@ -34,9 +34,12 @@ function mejor(t, lista) {
 
 // Convierte lo que dijo el agricultor en un registro técnico estructurado.
 // Solo puede responder con categorías de una lista fija (no inventa diagnósticos).
-export function extraer(texto) {
+export function extraer(texto, cultivoPerfil = 'cafe') {
   const t = normalizar(texto);
-  const puntajes = SINTOMAS
+  // Cultivo: el que se nombre en la frase (si es café o maíz); si no, el del perfil del agricultor.
+  const nombrado = mejor(t, CULTIVOS);
+  const cultivoId = nombrado && ['cafe', 'maiz'].includes(nombrado.id) ? nombrado.id : cultivoPerfil;
+  const puntajes = sintomasDe(cultivoId)
     .map((s) => ({ s, n: coincidencias(t, s) }))
     .filter((x) => x.n > 0)
     .sort((a, b) => b.n - a.n);
@@ -45,7 +48,7 @@ export function extraer(texto) {
   const top = puntajes[0];
   let sintomaId = null, confianza = 'baja', prob = null, metodo = 'reglas', ranking = [];
 
-  const c = clasificar(texto);   // modelo entrenado (si ya cargó)
+  const c = clasificar(texto, cultivoId);   // modelo entrenado del cultivo (si ya cargó)
   if (c) {
     metodo = 'modelo';
     prob = c.p;
@@ -61,7 +64,7 @@ export function extraer(texto) {
   }
   const s = SINTOMAS.find((x) => x.id === sintomaId);
 
-  const cultivo = mejor(t, CULTIVOS) || CULTIVOS[0];
+  const cultivo = CULTIVOS.find((x) => x.id === cultivoId) || CULTIVOS[0];
   const parte = mejor(t, PARTES);
   const extension = mejor(t, EXTENSION);
   const clima = mejor(t, CLIMA);
@@ -106,7 +109,7 @@ export function leerDeVuelta(r) {
 }
 
 // Código corto para mandar por SMS cuando no hay datos (cabe en un SMS de 160 caracteres).
-const COD = { come_hojas: 'CH', roya: 'RY', broca: 'BR', minador: 'MN', ojo_de_gallo: 'OG', mancha_hierro: 'MH', muerte_descendente: 'MD', nutricion: 'NU', no_claro: 'NC' };
+const COD = { cogollero: 'CG', raiz_maiz: 'RZ', mazorca: 'MZ', gorgojo: 'GG', sequia_maiz: 'SQ', nutricion_maiz: 'NM', manchas_maiz: 'MM', come_hojas: 'CH', roya: 'RY', broca: 'BR', minador: 'MN', ojo_de_gallo: 'OG', mancha_hierro: 'MH', muerte_descendente: 'MD', nutricion: 'NU', no_claro: 'NC' };
 export function codigoSMS(r, perfil) {
   const fecha = new Date(r.fecha).toISOString().slice(2, 10).replace(/-/g, '');
   return [

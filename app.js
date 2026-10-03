@@ -1,6 +1,6 @@
 import { extraer, leerDeVuelta, codigoSMS } from './extract.js';
-import { SINTOMAS } from './lexicon.js';
-import { cargarClasificador } from './clasificador.js';
+import { SINTOMAS, sintomasDe } from './lexicon.js';
+import { cargarTodos } from './clasificador.js';
 import { ZONAS, getPerfil, setPerfil, getCola, guardarEnCola, enviarCola, getAlertas, escuchar } from './store.js';
 
 const $ = (id) => document.getElementById(id);
@@ -18,7 +18,7 @@ function mostrarPerfil() {
   const sel = $('zona');
   sel.innerHTML = Object.entries(ZONAS).map(([k, z]) => `<option value="${k}">${z.nombre}</option>`).join('');
   const p = getPerfil();
-  if (p) { $('finca').value = p.finca; sel.value = p.zona; $('consiente').checked = true; }
+  if (p) { $('finca').value = p.finca; sel.value = p.zona; $('cultivoPerfil').value = p.cultivo || 'cafe'; $('consiente').checked = true; }
   validarPerfil();
 }
 function validarPerfil() { $('btnGuardarPerfil').disabled = !($('finca').value.trim() && $('consiente').checked); }
@@ -29,9 +29,11 @@ $('btnGuardarPerfil').addEventListener('click', () => {
   setPerfil({
     finca: $('finca').value.trim(),
     zona: $('zona').value,
+    cultivo: $('cultivoPerfil').value,
     codigo: previo?.codigo || 'F' + String(Math.floor(Math.random() * 900) + 100),
     creado: previo?.creado || Date.now(),
   });
+  pintarIconos($('cultivoPerfil').value);
   iniciar();
 });
 $('lnkPerfil').addEventListener('click', (e) => { e.preventDefault(); mostrarPerfil(); });
@@ -167,7 +169,8 @@ $('foto').addEventListener('change', async (e) => {
   $('pesoFoto').textContent = `Foto original: ${Math.round(f.size / 1024)} KB → enviada: ${kb} KB. El técnico la verá para confirmar.`;
 });
 function procesar(texto, blob) {
-  registroActual = { ...extraer(texto), fecha: Date.now(), tiene_audio: !!blob };
+  registroActual = { ...extraer(texto, getPerfil()?.cultivo || 'cafe'), fecha: Date.now(), tiene_audio: !!blob };
+  pintarIconos(registroActual.cultivo);
   audioActual = blob;
   fotoActual = null; $('cajaFoto').classList.add('oculto'); $('foto').value = '';
   pintarResultado();
@@ -213,9 +216,13 @@ $('btnNo').addEventListener('click', () => {
   hablar('Toca el dibujo que más se parece a lo que ves.');
 });
 
-const DIBUJOS = { come_hojas: '🐜', roya: '🍂', broca: '🕳️', minador: '🔥', ojo_de_gallo: '⚪', mancha_hierro: '🎯', muerte_descendente: '🥀', nutricion: '🟡' };
-$('iconos').innerHTML = SINTOMAS.map((s) => `<button class="icono" data-id="${s.id}"><b>${DIBUJOS[s.id]}</b>${s.sencillo}</button>`).join('')
-  + '<button class="icono" data-id="no_claro"><b>❓</b>Otra cosa / no sé</button>';
+const DIBUJOS = { come_hojas: '🐜', roya: '🍂', broca: '🕳️', minador: '🔥', ojo_de_gallo: '⚪', mancha_hierro: '🎯', muerte_descendente: '🥀', nutricion: '🟡',
+  cogollero: '🐛', raiz_maiz: '🪱', mazorca: '🌽', gorgojo: '🪲', sequia_maiz: '☀️', nutricion_maiz: '🟡', manchas_maiz: '⚫' };
+function pintarIconos(cultivo) {
+  $('iconos').innerHTML = sintomasDe(cultivo).map((s) => `<button class="icono" data-id="${s.id}"><b>${DIBUJOS[s.id]}</b>${s.sencillo}</button>`).join('')
+    + '<button class="icono" data-id="no_claro"><b>❓</b>Otra cosa / no sé</button>';
+}
+pintarIconos(getPerfil()?.cultivo || 'cafe');
 $('iconos').addEventListener('click', (e) => {
   const b = e.target.closest('.icono'); if (!b || !registroActual) return;
   const s = SINTOMAS.find((x) => x.id === b.dataset.id);
@@ -276,7 +283,7 @@ function iniciar() {
   $('vistaPrincipal').classList.remove('oculto');
   pintarCola(); pintarAvisos();
   if (!modeloListo) worker.postMessage({ tipo: 'cargar', modelo: MODELO });
-  cargarClasificador().catch((e) => console.warn('Clasificador no disponible, uso reglas', e));
+  cargarTodos().catch((e) => console.warn('Clasificador no disponible, uso reglas', e));
 }
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 speechSynthesis?.getVoices();

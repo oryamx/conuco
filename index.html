@@ -27,6 +27,8 @@
     <p>Conuco es tu cuaderno de campo. Le hablas como a un vecino y él lo anota para el técnico de tu cooperativa. Funciona <b>sin internet y sin luz</b>.</p>
     <label for="finca">¿Cómo se llama tu finca o conuco?</label>
     <input id="finca" type="text" placeholder="Ej: La Esperanza" autocomplete="off">
+    <label for="cultivoPerfil">¿Qué siembras principalmente?</label>
+    <select id="cultivoPerfil"><option value="cafe">☕ Café</option><option value="maiz">🌽 Maíz</option></select>
     <label for="zona">¿En qué zona estás?</label>
     <select id="zona"></select>
     <label class="check"><input id="consiente" type="checkbox"> <span>Acepto que mis reportes lleguen a mi cooperativa <b>sin mi nombre</b>. Mis notas de voz se quedan en mi teléfono.</span></label>
@@ -46,7 +48,7 @@
       <p class="pista">Cuéntame qué le pasa a tu siembra, como se lo contarías a un vecino.</p>
       <details>
         <summary>¿Prefieres escribir?</summary>
-        <textarea id="texto" placeholder="Ej: las hojas de las matas de arriba están como oxidadas por debajo y se están cayendo"></textarea>
+        <textarea id="texto" placeholder="Ej: las hojas de arriba están como oxidadas por debajo / el cogollo del maíz está comido"></textarea>
         <button id="btnTexto" class="btn sec" style="margin-top:8px">Anotar</button>
       </details>
     </section>

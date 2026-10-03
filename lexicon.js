@@ -3,7 +3,7 @@
 // caficultores y agrónomos de cada zona antes de usarse en campo.
 // Cada patrón es una expresión regular sobre texto normalizado (minúsculas, sin acentos).
 
-export const SINTOMAS = [
+const SINTOMAS_CAFE = [
   {
     id: 'roya',
     tecnico: 'Síntoma compatible con roya del café (Hemileia vastatrix)',
@@ -71,18 +71,70 @@ export const SINTOMAS = [
   },
 ];
 
+// ---------- Maíz (paquete 2) ----------
+// Categorías conservadoras: varias son "compatibles con" y piden revisión del técnico.
+const SINTOMAS_MAIZ = [
+  {
+    id: 'cogollero',
+    tecnico: 'Síntoma compatible con gusano cogollero (Spodoptera frugiperda)',
+    sencillo: 'el cogollo comido, con huecos y como aserrín, a veces con un gusano adentro',
+    patrones: [/cogoller/, /cogollo/, /aserrin/, /gusano (en|dentro)/, /hojas? (comid|agujerad|rot)/, /huecos? en las hojas/, /se (le )?(esta|estan) comiendo/],
+  },
+  {
+    id: 'raiz_maiz',
+    tecnico: 'Daño en raíz compatible con gallina ciega o gusano alfilerillo (Diabrotica)',
+    sencillo: 'matas que se marchitan o se caen, con gusanos blancos o raíces comidas',
+    patrones: [/gallina ciega/, /alfiler/, /raic/, /raiz/, /se (estan )?(cayendo|acostando|volteando) las matas/, /gusanos? blanco/, /marchit/],
+  },
+  {
+    id: 'mazorca',
+    tecnico: 'Mazorca dañada: compatible con gusano de la mazorca o pudrición (requiere revisión)',
+    sencillo: 'mazorcas comidas en la punta, podridas o con moho',
+    patrones: [/mazorc/, /jojoto/, /podrid/, /moho/, /hongo/, /punta de la mazorca/],
+  },
+  {
+    id: 'gorgojo',
+    tecnico: 'Plaga de grano almacenado compatible con gorgojo del maíz (Sitophilus zeamais)',
+    sencillo: 'el maíz guardado tiene gorgojos, huequitos y polvillo',
+    patrones: [/gorgoj/, /guardad/, /almacen/, /en el saco/, /polvillo .{0,15}grano/, /grano guardado/],
+  },
+  {
+    id: 'sequia_maiz',
+    tecnico: 'Estrés por falta de agua (hojas enrolladas / secas)',
+    sencillo: 'hojas enrolladas o secas por la falta de lluvia',
+    patrones: [/enrollad/, /enrosc/, /no ha llovido/, /sequia/, /falta de agua/, /se (esta|estan) secando/],
+  },
+  {
+    id: 'nutricion_maiz',
+    tecnico: 'Posible deficiencia nutricional o de suelo en maíz (requiere revisión)',
+    sencillo: 'matas amarillas o moradas, chiquitas, con mazorcas pequeñas',
+    patrones: [/amarill/, /morad/, /palid/, /chiquit/, /no (crecen|crecio|creció)/, /mazorcas? (pequen|chiquit)/],
+  },
+  {
+    id: 'manchas_maiz',
+    tecnico: 'Manchas en hojas: posible enfermedad foliar (p. ej. mancha de asfalto, tizón, roya común) — requiere revisión',
+    sencillo: 'manchas o rayas en las hojas (negras, marrones o como óxido)',
+    patrones: [/manchas?/, /asfalto/, /raya/, /tizon/, /puntos negros/, /oxid/],
+  },
+];
+
+SINTOMAS_CAFE.forEach((s) => { s.cultivo = 'cafe'; });
+SINTOMAS_MAIZ.forEach((s) => { s.cultivo = 'maiz'; });
+export const SINTOMAS = [...SINTOMAS_CAFE, ...SINTOMAS_MAIZ];
+export const sintomasDe = (cultivo) => (cultivo === 'maiz' ? SINTOMAS_MAIZ : SINTOMAS_CAFE);
+
 export const CULTIVOS = [
   { id: 'cafe', nombre: 'Café', patrones: [/\bcafe/, /cafetal/, /cereza/, /\bpepa/] },
   { id: 'platano', nombre: 'Plátano / cambur', patrones: [/platan/, /cambur/, /guineo/] },
-  { id: 'maiz', nombre: 'Maíz', patrones: [/\bmaiz/, /mazorca/, /jojoto/] },
+  { id: 'maiz', nombre: 'Maíz', patrones: [/\bmaiz/, /mazorca/, /jojoto/, /maizal/, /cogollo/] },
   { id: 'caraota', nombre: 'Caraota', patrones: [/caraota/, /frijol/] },
   { id: 'yuca', nombre: 'Yuca', patrones: [/\byuca/] },
 ];
 
 export const PARTES = [
   { id: 'hoja', nombre: 'Hojas', patrones: [/hoj/] },
-  { id: 'grano', nombre: 'Granos / frutos', patrones: [/grano/, /cereza/, /\bpepa/, /fruto/] },
-  { id: 'rama', nombre: 'Ramas', patrones: [/rama/, /\bpalo/, /tallo/] },
+  { id: 'grano', nombre: 'Granos / frutos / mazorca', patrones: [/grano/, /cereza/, /\bpepa/, /fruto/, /mazorc/] },
+  { id: 'rama', nombre: 'Ramas / tallo / cogollo', patrones: [/rama/, /\bpalo/, /tallo/, /cogollo/, /cana/] },
   { id: 'raiz', nombre: 'Raíz', patrones: [/raiz/, /raices/] },
   { id: 'flor', nombre: 'Flores', patrones: [/\bflor/] },
 ];

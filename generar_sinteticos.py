@@ -35,5 +35,32 @@ for _ in range(34):
     z = random.choice(list(ZONAS)); s = random.choice(["minador", "nutricion", "ojo_de_gallo", "muerte_descendente", "no_claro", "roya", "broca"])
     if s in ("roya", "broca"): s = "minador"   # el ruido de fondo no toca las señales de la demo
     add(z, s, random.randint(15, 30) if s == "no_claro" else random.randint(0, 30))
+# ---------- Maíz (Portuguesa) ----------
+ZONAS_MAIZ = {"TU": (9.3150, -69.1100), "GU": (9.0418, -69.7421)}
+FRASES_MAIZ = {
+ "cogollero": ["el cogollo está comido y tiene como aserrín", "le cayó el cogollero al maíz chiquito", "hay un gusano metido en el cogollo"],
+ "mazorca": ["las mazorcas tienen la punta comida", "las mazorcas salieron podridas con tanta lluvia"],
+ "sequia_maiz": ["las hojas del maíz se enrollan, no ha llovido"],
+ "nutricion_maiz": ["el maíz está amarillo y chiquito", "las hojas tienen un color morado"],
+ "manchas_maiz": ["las hojas tienen puntos negros como de asfalto"],
+ "raiz_maiz": ["las matas se caen solas y la raíz está comida"],
+}
+TEC_MAIZ = {"cogollero": "Síntoma compatible con gusano cogollero (Spodoptera frugiperda)",
+ "mazorca": "Mazorca dañada: compatible con gusano de la mazorca o pudrición (requiere revisión)",
+ "sequia_maiz": "Estrés por falta de agua (hojas enrolladas / secas)",
+ "nutricion_maiz": "Posible deficiencia nutricional o de suelo en maíz (requiere revisión)",
+ "manchas_maiz": "Manchas en hojas: posible enfermedad foliar (p. ej. mancha de asfalto, tizón, roya común) — requiere revisión",
+ "raiz_maiz": "Daño en raíz compatible con gallina ciega o gusano alfilerillo (Diabrotica)"}
+fincas_m = {z: [(f"F{z}{i:02d}", lat + random.uniform(-.06, .06), lng + random.uniform(-.06, .06)) for i in range(14)] for z, (lat, lng) in ZONAS_MAIZ.items()}
+def add_m(z, s, dias):
+    fid, lat, lng = random.choice(fincas_m[z])
+    reps.append({"id": f"sint-{len(reps)}", "sintetico": True, "zona": z, "finca": fid, "lat": round(lat, 5), "lng": round(lng, 5),
+        "hace_dias": dias, "cultivo": "maiz", "cultivo_nombre": "Maíz", "sintoma": s, "sintoma_tecnico": TEC_MAIZ[s],
+        "texto_original": random.choice(FRASES_MAIZ[s]), "confianza": random.choice(["alta", "alta", "media"]),
+        "extension": random.choice([1, 2, 2, 3]), "clima": None, "confirmado": True})
+for _ in range(6): add_m("TU", "cogollero", random.randint(0, 10))     # brote de cogollero en Turén → alerta lista
+for _ in range(12):
+    add_m(random.choice(list(ZONAS_MAIZ)), random.choice(["mazorca", "sequia_maiz", "nutricion_maiz", "manchas_maiz", "raiz_maiz"]), random.randint(0, 30))
+
 json.dump(reps, open("reportes_sinteticos.json", "w"), ensure_ascii=False, indent=1)
 print(len(reps), "reportes sintéticos")

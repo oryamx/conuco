@@ -22,6 +22,8 @@ export const ZONAS = {
   BI: { nombre: 'Biscucuy (Portuguesa)', lat: 9.3590, lng: -69.9820 },
   SA: { nombre: 'Sanare (Lara)', lat: 9.7470, lng: -69.6530 },
   SC: { nombre: 'Santa Cruz de Mora (Mérida)', lat: 8.4040, lng: -71.6620 },
+  TU: { nombre: 'Turén (Portuguesa) · maíz', lat: 9.3150, lng: -69.1100 },
+  GU: { nombre: 'Guanare (Portuguesa) · maíz', lat: 9.0418, lng: -69.7421 },
 };
 
 export const getPerfil = () => leer(K_PERFIL, null);

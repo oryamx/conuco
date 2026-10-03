@@ -4,13 +4,20 @@ import { SINTOMAS } from './lexicon.js';
 const $ = (id) => document.getElementById(id);
 const DIA = 86400000;
 const UMBRAL = { reportes: 5, fincas: 3, dias: 14 };
-const COLOR = { come_hojas: '#3d7a8a', roya: '#d9711c', broca: '#5b3a29', minador: '#8a6d1f', ojo_de_gallo: '#7b8794', mancha_hierro: '#8e2c48', muerte_descendente: '#4a4a4a', nutricion: '#d4b106', no_claro: '#b3261e' };
+const COLOR = { cogollero: '#6a994e', raiz_maiz: '#9c6644', mazorca: '#e9c46a', gorgojo: '#264653', sequia_maiz: '#f4a261', nutricion_maiz: '#c9b400', manchas_maiz: '#1d1d1d', come_hojas: '#3d7a8a', roya: '#d9711c', broca: '#5b3a29', minador: '#8a6d1f', ojo_de_gallo: '#7b8794', mancha_hierro: '#8e2c48', muerte_descendente: '#4a4a4a', nutricion: '#d4b106', no_claro: '#b3261e' };
 const NOMBRE = Object.fromEntries(SINTOMAS.map((s) => [s.id, s.sencillo]));
 NOMBRE.no_claro = 'no queda claro (revisar)';
-const CORTO = { come_hojas: 'hojas comidas (bachaco/gusanos)', roya: 'roya', broca: 'broca', minador: 'minador', ojo_de_gallo: 'ojo de gallo', mancha_hierro: 'mancha de hierro', muerte_descendente: 'ramas secas', nutricion: 'hojas amarillas / poca carga', no_claro: 'no claro' };
+const CORTO = { cogollero: '🌽 gusano cogollero', raiz_maiz: '🌽 daño en raíz', mazorca: '🌽 mazorca dañada', gorgojo: '🌽 gorgojo (grano guardado)', sequia_maiz: '🌽 falta de agua', nutricion_maiz: '🌽 matas amarillas / débiles', manchas_maiz: '🌽 manchas en hojas', come_hojas: 'hojas comidas (bachaco/gusanos)', roya: 'roya', broca: 'broca', minador: 'minador', ojo_de_gallo: 'ojo de gallo', mancha_hierro: 'mancha de hierro', muerte_descendente: 'ramas secas', nutricion: 'hojas amarillas / poca carga', no_claro: 'no claro' };
 
 // Mensaje para el agricultor: sencillo, sin términos técnicos, sin recetas de agroquímicos.
 const CONSEJO = {
+  cogollero: 'Revise el cogollo de las matas jóvenes: si ve huecos y aserrín, cuente cuántas matas de cada 20 tienen daño y avísele al técnico antes de aplicar cualquier producto.',
+  raiz_maiz: 'Arranque con cuidado una mata caída y mire la raíz. Avísele al técnico qué encontró.',
+  mazorca: 'Separe las mazorcas podridas, no las mezcle con las sanas, y avísele al técnico.',
+  gorgojo: 'Revise los sacos de maíz guardado y sepárelos si ve gorgojos. Pregunte al técnico cómo guardarlo.',
+  sequia_maiz: 'Anote qué lotes están más afectados por la falta de agua. El técnico le puede orientar.',
+  nutricion_maiz: 'El técnico puede ayudar a revisar el suelo. Anote qué lotes están más débiles.',
+  manchas_maiz: 'Tome una foto de las hojas manchadas para el técnico y anote cuántas matas las tienen.',
   come_hojas: 'Busque caminos de bachaco o gusanos cerca de las matas comidas y avísele al técnico antes de aplicar cualquier producto.',
   roya: 'Revise la parte de abajo de las hojas. Si ve polvillo naranja, anote cuántas matas y avísele al técnico. No aplique productos sin consultar.',
   broca: 'Recoja los granos caídos y los que tengan huequito, no los deje en el suelo. El técnico pasará por la zona.',
@@ -60,7 +67,8 @@ function detectarBrotes(reps) {
 function mensaje(b) {
   const z = ZONAS[b.zona].nombre.split(' (')[0];
   const lluvia = b.clima >= 2 ? ' después de las lluvias' : '';
-  return `Atención caficultores de ${z}: ${b.fincas} fincas reportaron ${NOMBRE[b.sintoma]}${lluvia} en las últimas dos semanas. ${CONSEJO[b.sintoma] || ''}`;
+  const quien = SINTOMAS.find((x) => x.id === b.sintoma)?.cultivo === 'maiz' ? 'productores de maíz' : 'caficultores';
+  return `Atención ${quien} de ${z}: ${b.fincas} fincas reportaron ${NOMBRE[b.sintoma]}${lluvia} en las últimas dos semanas. ${CONSEJO[b.sintoma] || ''}`;
 }
 
 let encuadrado = false;
