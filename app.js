@@ -101,11 +101,28 @@ function transcribir(audio) {
 }
 
 // ---------- Grabación ----------
+// Navegadores dentro de otras apps (WhatsApp, Instagram, Facebook, Gmail…) suelen bloquear el micrófono sin preguntar.
+const EN_APP = /FBAN|FBAV|Instagram|WhatsApp|Line\/|GSA\/|; wv\)|MicroMessenger/i.test(navigator.userAgent);
+const ES_IOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+function avisoMic(tipo) {
+  let msg;
+  if (EN_APP) msg = 'Abriste Conuco dentro de otra app y no deja usar el micrófono. Toca ⋮ o ••• y elige "Abrir en Chrome" (o Safari).';
+  else if (tipo === 'NotAllowedError' || tipo === 'SecurityError') msg = ES_IOS
+    ? 'El micrófono está bloqueado. En Safari toca "aA" → Configuración del sitio web → Micrófono → Permitir. Si no aparece: Ajustes del iPhone → Safari (o Chrome) → Micrófono.'
+    : 'El micrófono está bloqueado. Toca el ícono a la izquierda de la dirección → Permisos → Micrófono → Permitir. Si no aparece: Ajustes del teléfono → Apps → Chrome → Permisos → Micrófono.';
+  else if (tipo === 'NotFoundError') msg = 'No encontré un micrófono en este equipo.';
+  else if (tipo === 'NotReadableError') msg = 'Otra app está usando el micrófono. Ciérrala e intenta de nuevo.';
+  else if (tipo === 'noSoporta') msg = 'Este navegador no permite grabar. Abre Conuco en Chrome o Safari actualizados.';
+  else msg = 'No pude usar el micrófono.';
+  $('etiquetaMic').textContent = '🎙️ ' + msg + ' Mientras tanto, puedes escribir abajo.';
+  document.querySelector('details')?.setAttribute('open', '');
+}
 let grabador = null, trozos = [], corte = null;
 async function empezarGrabar() {
   let stream;
+  if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) { avisoMic('noSoporta'); return; }
   try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); }
-  catch { $('etiquetaMic').textContent = 'Necesito permiso para el micrófono'; return; }
+  catch (e) { avisoMic(e?.name); return; }
   trozos = [];
   grabador = new MediaRecorder(stream);
   grabador.ondataavailable = (e) => e.data.size && trozos.push(e.data);
