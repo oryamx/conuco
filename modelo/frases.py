@@ -42,6 +42,13 @@ SINTOMAS = {
         "la punta de las ramas se pone negra y se muere", "las bandolas se secan desde afuera para adentro",
         "los cogollos se están secando", "las ramas nuevas se mueren", "se secan las puntas y se caen las hojas de la punta",
     ],
+    "come_hojas": [
+        "las hojas están como comidas", "algo se está comiendo las hojas", "el bachaco se está llevando las hojas",
+        "las hormigas cortaron las hojas", "las hojas tienen mordiscos en el borde", "hay gusanos comiéndose las hojas",
+        "amanecieron las matas peladas, se las comieron", "las hojas tienen pedazos mordidos",
+        "le están cortando las hojitas nuevas", "hay un camino de bachacos que llega a las matas",
+        "las hojas están rotas y comidas por los bordes", "unos bichos verdes se comen la hoja",
+    ],
     "nutricion": [
         "las hojas están amarillas parejas", "las matas están flacas y no crecen", "este año no cargó nada",
         "la cosecha bajó mucho", "las hojas están pálidas", "las matas se ven débiles y descoloridas",
@@ -80,6 +87,8 @@ PRUEBA = [
     ("manchas con el centro clarito y orilla morada", "mancha_hierro"),
     ("las ramas se están muriendo de la punta para atrás", "muerte_descendente"),
     ("se secaron los cogollos y las puntas", "muerte_descendente"),
+    ("los bachacos me tienen las matas peladas", "come_hojas"),
+    ("las hojas amanecieron mordidas", "come_hojas"),
     ("este año las matas casi no dieron", "nutricion"),
     ("las matas están amarillentas y chiquitas", "nutricion"),
     ("la hoja está pálida en todo el lote", "nutricion"),
