@@ -36,6 +36,9 @@ SINTOMAS = {
         "los granos tienen manchas negras hundidas", "la cereza se pone negra de un lado",
         "manchas cafés con un anillo amarillo alrededor", "las pepas se manchan y se secan antes de madurar",
         "manchas con centro gris en la hoja y también en el grano",
+        "manchas amarillas con un punto café en el centro", "manchas marrones con un borde amarillo alrededor",
+        "circulitos color café rodeados de amarillo", "la hoja tiene manchas cafés como un ojo con aro amarillo",
+        "puntos marrones dentro de unas manchas amarillas",
     ],
     "muerte_descendente": [
         "las ramas se secan desde la punta", "se está secando de arriba para abajo", "los palos se están poniendo secos",

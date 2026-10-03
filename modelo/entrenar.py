@@ -20,7 +20,11 @@ def normalizar(t):
     t = unicodedata.normalize("NFD", t.lower())
     t = "".join(c for c in t if unicodedata.category(c) != "Mn")
     t = re.sub(r"[^a-z0-9ñ\s]", " ", t)
-    return re.sub(r"\s+", " ", t).strip()
+    t = re.sub(r"\s+", " ", t).strip()
+    # mismos arreglos de errores de voz que extract.js
+    for mal, bien in [(r"\bmas ron\b", "marron"), (r"\bmar ron\b", "marron"), (r"\bvachac", "bachac"), (r"\bbroka\b", "broca")]:
+        t = re.sub(mal, bien, t)
+    return t
 
 def generar(n_por_clase=260):
     X, y = [], []
