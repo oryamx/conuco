@@ -192,12 +192,24 @@ function pintarResultado() {
     ['Palabras clave reconocidas', r.pistas?.join(', ') || null],
   ];
   $('ficha').innerHTML = filas.map(([k, v]) => `<tr><td>${k}</td><td>${v ?? '<i>no mencionado</i>'}</td></tr>`).join('');
+  // Si no está seguro, muestra de una vez los dibujos, con los más probables primero.
+  if (r.confianza !== 'alta' && !r.corregido) mostrarDibujos(r.ranking || []);
   $('vistaResultado').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function mostrarDibujos(ranking) {
+  const orden = ranking.map((x) => x.id).filter((id) => id !== 'otro');
+  const botones = [...$('iconos').children];
+  botones.sort((a, b) => {
+    const ia = orden.indexOf(a.dataset.id), ib = orden.indexOf(b.dataset.id);
+    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+  }).forEach((b) => { b.style.borderColor = orden.slice(0, 2).includes(b.dataset.id) ? 'var(--sol)' : ''; $('iconos').appendChild(b); });
+  $('corregir').classList.remove('oculto');
 }
 
 $('btnOir').addEventListener('click', () => registroActual && hablar(leerDeVuelta(registroActual)));
 $('btnNo').addEventListener('click', () => {
-  $('corregir').classList.remove('oculto');
+  mostrarDibujos(registroActual?.ranking || []);
   hablar('Toca el dibujo que más se parece a lo que ves.');
 });
 

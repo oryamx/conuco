@@ -5,13 +5,18 @@ import { clasificar } from './clasificador.js';
 export const UMBRAL_ALTA = 0.7;
 export const UMBRAL_MEDIA = 0.45;
 
+// Errores típicos del reconocimiento de voz en palabras del campo (se amplía con las correcciones reales).
+const ARREGLOS_VOZ = [[/\bmas ron\b/g, 'marron'], [/\bmar ron\b/g, 'marron'], [/\bvachac/g, 'bachac'], [/\bbroka\b/g, 'broca']];
+
 export function normalizar(texto) {
-  return (texto || '')
+  let t = (texto || '')
     .toLowerCase()
     .normalize('NFD').replace(/[̀-ͯ]/g, '')
     .replace(/[^a-z0-9ñ\s]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
+  for (const [re, bien] of ARREGLOS_VOZ) t = t.replace(re, bien);
+  return t;
 }
 
 function coincidencias(t, item) {
@@ -71,6 +76,7 @@ export function extraer(texto) {
     sintoma_sencillo: s ? s.sencillo : null,
     otros_posibles: ranking.length ? ranking.slice(1).filter((r) => r.p >= 5).map((r) => `${r.id} (${r.p}%)`) : puntajes.slice(1, 3).map((x) => x.s.id),
     probabilidad: prob !== null ? Math.round(prob * 100) : null,
+    ranking,
     metodo,
     pistas: puntajes.map((x) => x.s.id),
     parte: parte?.id || null,
