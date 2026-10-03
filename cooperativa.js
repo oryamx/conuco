@@ -2,6 +2,11 @@ import { ZONAS, getCooperativa, getAlertas, aprobarAlerta, borrarTodo, escuchar,
 import { SINTOMAS } from './lexicon.js';
 
 const $ = (id) => document.getElementById(id);
+// Seguridad: todo lo que viene de un reporte (texto del agricultor, ids, fotos) es dato no confiable.
+const esc = (v) => String(v ?? '').replace(/[&<>"'`]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '`': '&#96;' }[c]));
+const fotoSegura = (f) => (typeof f === 'string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(f) ? f : null);
+const CONF_OK = ['alta', 'media', 'baja'];
+const confSegura = (c) => (CONF_OK.includes(c) ? c : 'baja');
 const DIA = 86400000;
 const UMBRAL = { reportes: 5, fincas: 3, dias: 14 };
 const COLOR = { cogollero: '#6a994e', raiz_maiz: '#9c6644', mazorca: '#e9c46a', gorgojo: '#264653', sequia_maiz: '#f4a261', nutricion_maiz: '#c9b400', manchas_maiz: '#1d1d1d', come_hojas: '#3d7a8a', roya: '#d9711c', broca: '#5b3a29', minador: '#8a6d1f', ojo_de_gallo: '#7b8794', mancha_hierro: '#8e2c48', muerte_descendente: '#4a4a4a', nutricion: '#d4b106', no_claro: '#b3261e' };
@@ -89,7 +94,7 @@ function pintar() {
     L.circleMarker([r.lat, r.lng], {
       radius: r.sintetico ? 6 : 10, color: r.sintetico ? '#fff' : '#000', weight: r.sintetico ? 1 : 3,
       fillColor: COLOR[r.sintoma] || '#999', fillOpacity: 0.85,
-    }).bindPopup(`${r.foto ? `<img src="${r.foto}" style="width:180px;border-radius:8px;display:block;margin-bottom:6px">` : ''}<b>${CORTO[r.sintoma] || r.sintoma}</b> · ${r.sintetico ? 'sintético' : 'reporte real de la app'}<br>“${r.texto_original}”<br><small>${new Date(r.fecha).toLocaleDateString('es-VE')} · confianza ${r.confianza}</small>`).addTo(capa);
+    }).bindPopup(`${fotoSegura(r.foto) ? `<img src="${fotoSegura(r.foto)}" style="width:180px;border-radius:8px;display:block;margin-bottom:6px">` : ''}<b>${esc(CORTO[r.sintoma] || r.sintoma)}</b> · ${r.sintetico ? 'sintético' : 'reporte real de la app'}<br>“${esc(r.texto_original)}”<br><small>${new Date(r.fecha).toLocaleDateString('es-VE')} · confianza ${confSegura(r.confianza)}</small>`).addTo(capa);
   });
   if (!encuadrado && reps.length) { mapa.fitBounds(L.latLngBounds(reps.map((r) => [r.lat, r.lng])).pad(0.15)); encuadrado = true; }
   $('leyenda').innerHTML = Object.entries(CORTO).map(([k, v]) => `<span><i style="background:${COLOR[k]}"></i>${v}</span>`).join('') + '<span>● borde negro = reporte real</span>';
@@ -99,7 +104,7 @@ function pintar() {
     return `<div class="tarjeta alerta ${ya ? 'enviada' : ''}">
       <h3>${ya ? '✅' : '🚨'} Posible brote de <b>${CORTO[b.sintoma]}</b> en ${ZONAS[b.zona].nombre}</h3>
       <div class="pista">${b.reportes} reportes · ${b.fincas} fincas · últimos 14 días${b.reales ? ` · ${b.reales} desde la app` : ''}</div>
-      <div class="msg">📢 ${mensaje(b)}</div>
+      <div class="msg">📢 ${esc(mensaje(b))}</div>
       ${ya ? '<div class="pista">Enviado por SMS y voz a las fincas de la zona.</div>' : `<button class="btn si" data-b="${i}">Revisé: aprobar y enviar (SMS + voz)</button>`}
     </div>`;
   }).join('') : '<div class="tarjeta pista">Sin alertas por ahora.</div>';
@@ -115,16 +120,16 @@ function pintar() {
   $('lista').innerHTML = '<tr><th>Cuándo</th><th>Zona</th><th>Foto</th><th>Lo que dijo el agricultor</th><th>Cómo lo anotó Conuco</th><th>Confianza</th><th>Revisión del técnico</th></tr>' +
     recientes.map((r) => `<tr class="${!r.sintetico && Date.now() - r.recibido < 120000 ? 'nuevo' : ''}">
       <td>${new Date(r.fecha).toLocaleDateString('es-VE', { day: 'numeric', month: 'short' })}</td>
-      <td>${ZONAS[r.zona]?.nombre.split(' (')[0] || r.zona}</td>
-      <td>${r.foto ? `<a href="${r.foto}" target="_blank"><img src="${r.foto}" style="width:56px;height:56px;object-fit:cover;border-radius:8px"></a>` : '<span class="pista">—</span>'}</td>
-      <td>“${r.texto_original}” ${r.sintetico ? '<span class="tag">sintético</span>' : '<span class="tag" style="background:#e5f0e3">app</span>'}</td>
-      <td>${r.sintoma_tecnico}${r.corregido_tecnico ? `<br><span class="pista">IA dijo: ${CORTO[r.sintoma_ia] || r.sintoma_ia}</span>` : ''}</td>
-      <td><span class="conf ${r.confianza}">${r.confianza}</span></td>
-      <td>${r.validado ? `<span class="conf alta">✔ ${r.corregido_tecnico ? 'corregido' : 'validado'}</span>` : `<select data-id="${r.id}" style="padding:6px;font-size:.8rem">${opciones(r.sintoma)}</select>
-        <button class="btn si" data-validar="${r.id}" style="padding:6px 10px;font-size:.8rem;margin-top:4px">Validar</button>`}</td></tr>`).join('');
+      <td>${esc(ZONAS[r.zona]?.nombre.split(' (')[0] || r.zona)}</td>
+      <td>${fotoSegura(r.foto) ? `<img src="${fotoSegura(r.foto)}" alt="foto del reporte" style="width:56px;height:56px;object-fit:cover;border-radius:8px">` : '<span class="pista">—</span>'}</td>
+      <td>“${esc(r.texto_original)}” ${r.sintetico ? '<span class="tag">sintético</span>' : '<span class="tag" style="background:#e5f0e3">app</span>'}</td>
+      <td>${esc(r.sintoma_tecnico)}${r.corregido_tecnico ? `<br><span class="pista">IA dijo: ${esc(CORTO[r.sintoma_ia] || r.sintoma_ia)}</span>` : ''}</td>
+      <td><span class="conf ${confSegura(r.confianza)}">${confSegura(r.confianza)}</span></td>
+      <td>${r.validado ? `<span class="conf alta">✔ ${r.corregido_tecnico ? 'corregido' : 'validado'}</span>` : `<select data-id="${esc(r.id)}" style="padding:6px;font-size:.8rem">${opciones(r.sintoma)}</select>
+        <button class="btn si" data-validar="${esc(r.id)}" style="padding:6px 10px;font-size:.8rem;margin-top:4px">Validar</button>`}</td></tr>`).join('');
   $('lista').querySelectorAll('[data-validar]').forEach((b) => b.addEventListener('click', () => {
     const id = b.dataset.validar;
-    corregir(id, { sintoma: $('lista').querySelector(`select[data-id="${id}"]`).value });
+    corregir(id, { sintoma: $('lista').querySelector(`select[data-id="${CSS.escape(id)}"]`).value });
     pintar();
   }));
 }
@@ -132,7 +137,7 @@ function pintar() {
 $('verSint').addEventListener('change', pintar);
 $('descargar').addEventListener('click', () => {
   const lineas = todos().filter((r) => r.validado && !r.descartado && r.sintoma !== 'no_claro')
-    .map((r) => `${r.sintoma} | ${r.texto_original.replace(/\n/g, ' ')}`);
+    .map((r) => `${r.sintoma} | ${String(r.texto_original).replace(/[\n|]/g, ' ')}`);
   const blob = new Blob([lineas.join('\n') + '\n'], { type: 'text/plain' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'frases_validadas.txt'; a.click();
 });

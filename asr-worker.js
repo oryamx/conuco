@@ -14,6 +14,7 @@ let modeloActual = null;
 async function cargar(modelo) {
   if (asr && modeloActual === modelo) return asr;
   asr = await pipeline('automatic-speech-recognition', modelo, {
+    revision: 'main', // TODO producción: fijar un commit del modelo y verificar su hash
     dtype: 'q8',
     device: 'wasm',
     progress_callback: (p) => {

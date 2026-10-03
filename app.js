@@ -4,6 +4,7 @@ import { cargarTodos } from './clasificador.js';
 import { ZONAS, getPerfil, setPerfil, getCola, guardarEnCola, enviarCola, getAlertas, escuchar } from './store.js';
 
 const $ = (id) => document.getElementById(id);
+const esc = (v) => String(v ?? '').replace(/[&<>"'`]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '`': '&#96;' }[c]));
 const params = new URLSearchParams(location.search);
 // whisper-base: mejor español (~80 MB). whisper-tiny: para teléfonos básicos (~40 MB).
 const MODELO = params.get('modelo') === 'tiny' ? 'onnx-community/whisper-tiny' : 'onnx-community/whisper-base';
@@ -194,7 +195,7 @@ function pintarResultado() {
     ['Otras posibilidades', r.otros_posibles.join(', ') || null],
     ['Palabras clave reconocidas', r.pistas?.join(', ') || null],
   ];
-  $('ficha').innerHTML = filas.map(([k, v]) => `<tr><td>${k}</td><td>${v ?? '<i>no mencionado</i>'}</td></tr>`).join('');
+  $('ficha').innerHTML = filas.map(([k, v]) => `<tr><td>${k}</td><td>${v == null ? '<i>no mencionado</i>' : esc(v)}</td></tr>`).join('');
   // Si no está seguro, muestra de una vez los dibujos, con los más probables primero.
   if (r.confianza !== 'alta' && !r.corregido) mostrarDibujos(r.ranking || []);
   $('vistaResultado').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -269,7 +270,7 @@ function pintarAvisos() {
   const perfil = getPerfil();
   const avisos = getAlertas().filter((a) => !perfil || a.zona === perfil.zona).slice(-3).reverse();
   $('avisos').innerHTML = avisos.map((a, i) => `
-    <div class="tarjeta aviso"><h3>📢 Aviso de tu cooperativa</h3><p>${a.mensaje}</p>
+    <div class="tarjeta aviso"><h3>📢 Aviso de tu cooperativa</h3><p>${esc(a.mensaje)}</p>
     <button class="btn sec" data-aviso="${i}">🔊 Escuchar aviso</button></div>`).join('');
   $('avisos').querySelectorAll('[data-aviso]').forEach((b) => b.addEventListener('click', () => hablar(avisos[+b.dataset.aviso].mensaje)));
 }
