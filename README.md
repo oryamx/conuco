@@ -54,6 +54,8 @@ Gabi (team, Venezuelan) spoke 9 test phrases out loud into the live app. The phr
 
 **First real test, first failure, first lesson:** the very first thing Gabi said was *"las hojas están como comidas"* (leaves look eaten). The model had no category for chewing-insect damage, so it answered **"not sure"** instead of inventing. We added the category, retrained, and it now understands it. That is exactly how Conuco is meant to learn the language of each community.
 
+**On a real phone (iPhone, Safari, airplane mode):** voice note → understood record in **~5 seconds**, fully offline (Whisper base). When signal came back, the queued report reached the cooperative in **1–2 seconds**. Not yet measured on a low-end Android; `?modelo=tiny` (~40 MB) is the fallback for weaker phones.
+
 ⚠️ Honest limits: all test phrases were written by the team, not by farmers; this measures the voice pipeline and phrasing variations, not real farmer vocabulary.
 
 ## Who uses it and who runs it
