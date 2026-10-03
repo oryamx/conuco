@@ -1,0 +1,10 @@
+{
+  "name": "Conuco — cuaderno de campo por voz",
+  "short_name": "Conuco",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#faf6ef",
+  "theme_color": "#2f6b3b",
+  "lang": "es",
+  "icons": [{ "src": "conuco.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Conuco · Cooperativa</title>
+  <meta name="theme-color" content="#2f6b3b">
+  <link rel="icon" href="conuco.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./leaflet.css">
+  <link rel="stylesheet" href="estilo.css">
+  <style>
+    .app { max-width: 1100px; }
+    .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .kpi { background: #fff; border: 1px solid var(--borde); border-radius: 14px; padding: 12px; }
+    .kpi b { display: block; font-size: 1.7rem; color: var(--hoja); }
+    .kpi span { font-size: .8rem; color: var(--suave); }
+    .grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 12px; }
+    #mapa { height: 420px; border-radius: var(--radio); border: 1px solid var(--borde); }
+    .alerta { border-left: 6px solid var(--cereza); }
+    .alerta.enviada { border-left-color: var(--hoja); opacity: .85; }
+    .alerta h3 { margin: 0 0 4px; font-size: 1rem; }
+    .msg { background: #f6f1e8; border-radius: 10px; padding: 10px; margin: 8px 0; }
+    table.lista { width: 100%; border-collapse: collapse; font-size: .82rem; }
+    table.lista th, table.lista td { text-align: left; padding: 7px 6px; border-bottom: 1px solid var(--borde); vertical-align: top; }
+    table.lista th { color: var(--suave); font-weight: 600; }
+    .nuevo { background: #fff7d6; }
+    .leyenda { display: flex; flex-wrap: wrap; gap: 8px; font-size: .75rem; margin-top: 8px; }
+    .leyenda i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; }
+    .tag { font-size: .7rem; padding: 2px 6px; border-radius: 5px; background: #eee3d3; }
+    @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } .kpis { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+<main class="app">
+  <header class="barra">
+    <div class="marca"><img src="conuco.svg" alt=""> Conuco · Cooperativa</div>
+    <div class="estado"><a class="chip" href="index.html">📱 App del agricultor</a></div>
+  </header>
+  <div class="tarjeta" style="background:#fff7e8">
+    ⚠️ <b>Demo:</b> los reportes marcados <span class="tag">sintético</span> son datos inventados para mostrar cómo funciona el panel.
+    Los reportes sin esa marca vienen de la app en este dispositivo.
+    <label class="check" style="margin-top:8px"><input id="verSint" type="checkbox" checked> <span>Mostrar datos sintéticos</span></label>
+  </div>
+
+  <section class="kpis">
+    <div class="kpi"><b id="kRep">0</b><span>reportes (30 días)</span></div>
+    <div class="kpi"><b id="kFin">0</b><span>fincas que reportan</span></div>
+    <div class="kpi"><b id="kRev">0</b><span>por revisar (IA no segura)</span></div>
+    <div class="kpi"><b id="kAle">0</b><span>alertas de brote</span></div>
+  </section>
+
+  <section class="grid">
+    <div class="tarjeta">
+      <h2>🗺️ Lo que reportan las fincas</h2>
+      <div id="mapa"></div>
+      <div id="leyenda" class="leyenda"></div>
+    </div>
+    <div>
+      <div class="tarjeta">
+        <h2>🚨 Alertas tempranas</h2>
+        <p class="pista">Se activa cuando <b>5 o más reportes</b> del mismo problema, de <b>3 o más fincas</b>, llegan desde una zona en <b>14 días</b>. El técnico revisa y decide si se envía.</p>
+      </div>
+      <div id="alertas"></div>
+    </div>
+  </section>
+
+  <section class="tarjeta">
+    <h2>📝 Reportes recientes</h2>
+    <p class="pista">A la izquierda, lo que dijo el agricultor con sus palabras. A la derecha, cómo lo anotó Conuco en términos técnicos.</p>
+    <div style="overflow-x:auto"><table class="lista" id="lista"></table></div>
+  </section>
+
+  <p class="pie"><a href="#" id="reiniciar">Reiniciar demo</a></p>
+</main>
+<script src="./leaflet.js"></script>
+<script type="module" src="cooperativa.js"></script>
+</body>
+</html>

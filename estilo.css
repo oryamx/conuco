@@ -1,0 +1,75 @@
+:root {
+  --tierra: #5b3a29;
+  --cafe: #7a4b2a;
+  --hoja: #2f6b3b;
+  --hoja-claro: #e5f0e3;
+  --cereza: #b3261e;
+  --sol: #f2b134;
+  --fondo: #faf6ef;
+  --tarjeta: #ffffff;
+  --texto: #2a211b;
+  --suave: #6d625a;
+  --borde: #e6ddd0;
+  --radio: 18px;
+  font-size: 18px;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--fondo); color: var(--texto); font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+body { min-height: 100dvh; }
+.app { max-width: 520px; margin: 0 auto; padding: 12px 16px 40px; }
+header.barra { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 0 12px; }
+.marca { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.4rem; color: var(--hoja); }
+.marca img { width: 38px; height: 38px; }
+.estado { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+.chip { font-size: .72rem; padding: 4px 9px; border-radius: 999px; background: #efe7da; color: var(--tierra); white-space: nowrap; }
+.chip.ok { background: var(--hoja-claro); color: var(--hoja); }
+.chip.mal { background: #fbe3e1; color: var(--cereza); }
+.tarjeta { background: var(--tarjeta); border: 1px solid var(--borde); border-radius: var(--radio); padding: 16px; margin: 12px 0; }
+h2 { font-size: 1.15rem; margin: 0 0 8px; }
+p { line-height: 1.45; }
+.pista { color: var(--suave); font-size: .92rem; margin: 6px 0 0; }
+.centro { text-align: center; }
+.mic {
+  width: 180px; height: 180px; border-radius: 50%; border: none; margin: 18px auto 8px; display: grid; place-items: center;
+  background: radial-gradient(circle at 35% 30%, #4c9a5a, var(--hoja)); color: #fff; font-size: 64px; cursor: pointer;
+  box-shadow: 0 10px 30px rgba(47,107,59,.35); transition: transform .15s;
+}
+.mic:active { transform: scale(.96); }
+.mic.grabando { background: radial-gradient(circle at 35% 30%, #e0564d, var(--cereza)); animation: pulso 1.2s infinite; }
+.mic:disabled { opacity: .45; cursor: wait; }
+@keyframes pulso { 0%{box-shadow:0 0 0 0 rgba(179,38,30,.5)} 70%{box-shadow:0 0 0 26px rgba(179,38,30,0)} 100%{box-shadow:0 0 0 0 rgba(179,38,30,0)} }
+.etiqueta-mic { font-weight: 700; font-size: 1.1rem; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: none; border-radius: 14px; padding: 14px 16px; font-size: 1rem; font-weight: 700; cursor: pointer; width: 100%; }
+.btn.si { background: var(--hoja); color: #fff; }
+.btn.no { background: #efe7da; color: var(--tierra); }
+.btn.sec { background: transparent; color: var(--hoja); border: 2px solid var(--hoja); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.fila { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+.dijo { font-style: italic; background: #f6f1e8; border-radius: 12px; padding: 10px 12px; }
+.entendi { font-size: 1.12rem; font-weight: 600; }
+.conf { display: inline-block; font-size: .75rem; font-weight: 800; padding: 3px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: .03em; }
+.conf.alta { background: var(--hoja-claro); color: var(--hoja); }
+.conf.media { background: #fdf0d2; color: #8a5a00; }
+.conf.baja { background: #fbe3e1; color: var(--cereza); }
+table.reg { width: 100%; border-collapse: collapse; font-size: .85rem; margin-top: 8px; }
+table.reg td { padding: 5px 4px; border-bottom: 1px dashed var(--borde); vertical-align: top; }
+table.reg td:first-child { color: var(--suave); width: 38%; }
+details summary { cursor: pointer; color: var(--suave); font-size: .9rem; margin-top: 10px; }
+.iconos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 10px; }
+.icono { border: 2px solid var(--borde); background: #fff; border-radius: 14px; padding: 10px; text-align: left; font-size: .9rem; cursor: pointer; }
+.icono b { display: block; font-size: 1.6rem; }
+.icono:hover, .icono:focus { border-color: var(--hoja); }
+.sms { font-family: ui-monospace, Menlo, monospace; background: #1f2a22; color: #d6f5d0; padding: 10px; border-radius: 10px; font-size: .85rem; word-break: break-all; }
+.aviso { border-left: 6px solid var(--sol); }
+.aviso h3 { margin: 0 0 6px; font-size: 1rem; }
+label { display: block; font-weight: 600; margin: 12px 0 6px; }
+input[type=text], select, textarea { width: 100%; font-size: 1rem; padding: 12px; border-radius: 12px; border: 1px solid var(--borde); background: #fff; color: var(--texto); }
+textarea { min-height: 70px; }
+.check { display: flex; gap: 10px; align-items: flex-start; font-weight: 400; }
+.check input { width: 22px; height: 22px; margin-top: 2px; }
+.barra-progreso { height: 8px; background: #eee3d3; border-radius: 99px; overflow: hidden; margin-top: 8px; }
+.barra-progreso div { height: 100%; width: 0; background: var(--hoja); transition: width .3s; }
+.oculto { display: none !important; }
+.pie { text-align: center; color: var(--suave); font-size: .78rem; margin-top: 24px; }
+.pie a { color: var(--hoja); }
+.toggle { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: .9rem; }

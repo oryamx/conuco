@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Conuco</title>
+  <meta name="description" content="Cuaderno de campo por voz que funciona sin internet ni luz.">
+  <meta name="theme-color" content="#2f6b3b">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="conuco.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<main class="app">
+  <header class="barra">
+    <div class="marca"><img src="conuco.svg" alt=""> Conuco</div>
+    <div class="estado">
+      <span id="chipRed" class="chip">…</span>
+      <span id="chipBat" class="chip oculto">🔋</span>
+      <span id="chipModelo" class="chip">IA: cargando</span>
+    </div>
+  </header>
+
+  <!-- Registro inicial: crea el "registro de agricultores" que hoy no existe -->
+  <section id="vistaPerfil" class="tarjeta oculto">
+    <h2>👋 Bienvenido a Conuco</h2>
+    <p>Conuco es tu cuaderno de campo. Le hablas como a un vecino y él lo anota para el técnico de tu cooperativa. Funciona <b>sin internet y sin luz</b>.</p>
+    <label for="finca">¿Cómo se llama tu finca o conuco?</label>
+    <input id="finca" type="text" placeholder="Ej: La Esperanza" autocomplete="off">
+    <label for="zona">¿En qué zona estás?</label>
+    <select id="zona"></select>
+    <label class="check"><input id="consiente" type="checkbox"> <span>Acepto que mis reportes lleguen a mi cooperativa <b>sin mi nombre</b>. Mis notas de voz se quedan en mi teléfono.</span></label>
+    <div style="margin-top:14px"><button id="btnGuardarPerfil" class="btn si" disabled>Empezar</button></div>
+  </section>
+
+  <section id="vistaPrincipal" class="oculto">
+    <div id="cajaCarga" class="tarjeta">
+      <b>Preparando Conuco para funcionar sin internet…</b>
+      <p class="pista">Esto se hace una sola vez. Después funciona en modo avión.</p>
+      <div class="barra-progreso"><div id="barra"></div></div>
+    </div>
+
+    <section class="tarjeta centro">
+      <button id="mic" class="mic" aria-label="Hablar" disabled>🎙️</button>
+      <div id="etiquetaMic" class="etiqueta-mic">Toca para hablar</div>
+      <p class="pista">Cuéntame qué le pasa a tu siembra, como se lo contarías a un vecino.</p>
+      <details>
+        <summary>¿Prefieres escribir?</summary>
+        <textarea id="texto" placeholder="Ej: las hojas de las matas de arriba están como oxidadas por debajo y se están cayendo"></textarea>
+        <button id="btnTexto" class="btn sec" style="margin-top:8px">Anotar</button>
+      </details>
+    </section>
+
+    <section id="vistaResultado" class="tarjeta oculto">
+      <div class="pista">Lo que dijiste:</div>
+      <div id="dijo" class="dijo"></div>
+      <div style="margin-top:12px" class="pista">Lo que entendí <span id="conf" class="conf"></span></div>
+      <div id="entendi" class="entendi"></div>
+      <div class="fila">
+        <button id="btnSi" class="btn si">✔ Sí, así es</button>
+        <button id="btnNo" class="btn no">✖ No, corregir</button>
+      </div>
+      <button id="btnOir" class="btn sec" style="margin-top:10px">🔊 Escuchar otra vez</button>
+      <div id="corregir" class="oculto">
+        <p class="pista">Toca el dibujo que más se parece a lo que ves:</p>
+        <div id="iconos" class="iconos"></div>
+      </div>
+      <details>
+        <summary>Ficha técnica (para el técnico)</summary>
+        <table class="reg" id="ficha"></table>
+      </details>
+    </section>
+
+    <section id="vistaGuardado" class="tarjeta oculto">
+      <h2>✅ Guardado en tu teléfono</h2>
+      <p id="msgGuardado">Se enviará solo cuando vuelva la señal.</p>
+      <p class="pista">¿Sin datos pero con señal de llamada? Este SMS lleva tu reporte completo:</p>
+      <div id="sms" class="sms"></div>
+    </section>
+
+    <section class="tarjeta">
+      <div class="toggle"><span>📤 Reportes por enviar: <b id="nCola">0</b></span>
+        <button id="btnEnviar" class="btn sec" style="width:auto;padding:8px 14px">Enviar</button></div>
+      <label class="check" style="margin-top:10px"><input id="simSinSenal" type="checkbox"> <span>Simular "sin señal" (para la demo)</span></label>
+    </section>
+
+    <section id="avisos"></section>
+
+    <p class="pie">Conuco no da diagnósticos ni recetas: anota lo que ves y avisa al técnico.<br>
+      <a href="cooperativa.html">Panel de la cooperativa →</a> · <a href="#" id="lnkPerfil">Cambiar finca</a></p>
+  </section>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>
