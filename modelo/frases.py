@@ -64,6 +64,7 @@ SINTOMAS = {
         "quiero que venga el técnico", "no sé explicar lo que tiene", "está mala la siembra",
         "hay un problema en el cafetal", "las matas no se ven bien", "oiga necesito ayuda con el café",
         "buenas tardes es para reportar algo", "no estoy seguro de lo que es",
+        "la mata está como triste", "las matas están tristes, no sé qué tienen", "la siembra se ve rara",
     ],
 }
 
@@ -129,7 +130,7 @@ SINTOMAS_MAIZ = {
     ],
     "sequia_maiz": [
         "las hojas del maíz se enrollan", "las hojas están como enroscadas por el sol", "no ha llovido y el maíz se está secando",
-        "con este verano las matas están tristes y enrolladas", "falta agua y las hojas se arrugan", "el maizal se está quemando por la sequía",
+        "con este verano las hojas están enrolladas", "falta agua y las hojas se arrugan", "el maizal se está quemando por la sequía",
         "las puntas de las hojas se secan por el calor",
     ],
     "nutricion_maiz": [
@@ -145,6 +146,7 @@ SINTOMAS_MAIZ = {
     "otro": [
         "no sé qué le pasa al maíz", "el maíz está feo", "algo raro tiene el maizal", "quiero que venga el técnico a ver el maíz",
         "las matas de maíz no se ven bien", "buenas, es para reportar algo en el maíz", "no sé explicar lo que tiene la siembra",
+        "el maíz está como triste", "el maizal se ve triste y no sé por qué", "las matas están raras, como tristes",
     ],
 }
 
