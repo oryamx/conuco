@@ -1,10 +1,10 @@
 // Service worker: guarda la app en el teléfono para que abra sin internet.
 // Los modelos de IA los guarda transformers.js en su propia caché ("transformers-cache").
-const VERSION = 'conuco-v2';
+const VERSION = 'conuco-v4';
 const CDN = 'conuco-cdn';
 const ARCHIVOS = [
   './', 'index.html', 'cooperativa.html', 'estilo.css', 'manifest.webmanifest', 'conuco.svg',
-  'app.js', 'extract.js', 'lexicon.js', 'store.js', 'asr-worker.js', 'cooperativa.js',
+  'app.js', 'extract.js', 'clasificador.js', 'modelo_conuco.json', 'lexicon.js', 'store.js', 'asr-worker.js', 'cooperativa.js',
   'transformers.min.js',
   'leaflet.js', 'leaflet.css', 'reportes_sinteticos.json',
 ];

@@ -1,5 +1,6 @@
 import { extraer, leerDeVuelta, codigoSMS } from './extract.js';
 import { SINTOMAS } from './lexicon.js';
+import { cargarClasificador } from './clasificador.js';
 import { ZONAS, getPerfil, setPerfil, getCola, guardarEnCola, enviarCola, getAlertas, escuchar } from './store.js';
 
 const $ = (id) => document.getElementById(id);
@@ -146,9 +147,29 @@ function hablar(frase) {
 }
 
 let audioActual = null;
+let fotoActual = null;
+
+// La foto se achica a 640 px y JPEG calidad 0.6 (~40-80 KB) para que pase por una conexión débil.
+async function comprimirFoto(file) {
+  const img = await createImageBitmap(file);
+  const escala = Math.min(1, 640 / Math.max(img.width, img.height));
+  const c = document.createElement('canvas');
+  c.width = Math.round(img.width * escala); c.height = Math.round(img.height * escala);
+  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+  return c.toDataURL('image/jpeg', 0.6);
+}
+$('foto').addEventListener('change', async (e) => {
+  const f = e.target.files?.[0]; if (!f) return;
+  fotoActual = await comprimirFoto(f);
+  $('previa').src = fotoActual;
+  $('cajaFoto').classList.remove('oculto');
+  const kb = Math.round((fotoActual.length * 3) / 4 / 1024);
+  $('pesoFoto').textContent = `Foto original: ${Math.round(f.size / 1024)} KB → enviada: ${kb} KB. El técnico la verá para confirmar.`;
+});
 function procesar(texto, blob) {
   registroActual = { ...extraer(texto), fecha: Date.now(), tiene_audio: !!blob };
   audioActual = blob;
+  fotoActual = null; $('cajaFoto').classList.add('oculto'); $('foto').value = '';
   pintarResultado();
   hablar(leerDeVuelta(registroActual));
 }
@@ -166,7 +187,9 @@ function pintarResultado() {
   const filas = [
     ['Cultivo', r.cultivo_nombre], ['Observación', r.sintoma_tecnico], ['Parte de la planta', r.parte_nombre],
     ['Extensión', r.extension_nombre], ['Desde hace', r.dias ? r.dias + ' días' : null], ['Clima asociado', r.clima_nombre],
-    ['Confianza', r.confianza], ['Otras posibilidades', r.otros_posibles.join(', ') || null],
+    ['Confianza', r.confianza + (r.probabilidad !== null ? ` (${r.probabilidad}% según el modelo)` : ' (reglas)')],
+    ['Otras posibilidades', r.otros_posibles.join(', ') || null],
+    ['Palabras clave reconocidas', r.pistas?.join(', ') || null],
   ];
   $('ficha').innerHTML = filas.map(([k, v]) => `<tr><td>${k}</td><td>${v ?? '<i>no mencionado</i>'}</td></tr>`).join('');
   $('vistaResultado').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -194,7 +217,7 @@ $('iconos').addEventListener('click', (e) => {
 $('btnSi').addEventListener('click', () => {
   if (!registroActual) return;
   const perfil = getPerfil();
-  const r = { ...registroActual, confirmado: true, finca: perfil.codigo, zona: perfil.zona, id: crypto.randomUUID() };
+  const r = { ...registroActual, confirmado: true, finca: perfil.codigo, zona: perfil.zona, id: crypto.randomUUID(), foto: fotoActual };
   r.sms = codigoSMS(r, perfil);
   guardarEnCola(r);
   $('vistaResultado').classList.add('oculto');
@@ -204,7 +227,7 @@ $('btnSi').addEventListener('click', () => {
     ? 'No hay señal: se enviará solo cuando vuelva.'
     : 'Enviando a tu cooperativa…';
   hablar(sinSenal() ? 'Listo, lo guardé. Lo envío cuando vuelva la señal.' : 'Listo, lo guardé y lo estoy enviando.');
-  registroActual = null;
+  registroActual = null; fotoActual = null;
   $('texto').value = '';
   pintarCola();
   intentarEnviar();
@@ -241,6 +264,7 @@ function iniciar() {
   $('vistaPrincipal').classList.remove('oculto');
   pintarCola(); pintarAvisos();
   if (!modeloListo) worker.postMessage({ tipo: 'cargar', modelo: MODELO });
+  cargarClasificador().catch((e) => console.warn('Clasificador no disponible, uso reglas', e));
 }
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 speechSynthesis?.getVoices();

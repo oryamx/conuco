@@ -1,4 +1,9 @@
 import { SINTOMAS, CULTIVOS, PARTES, EXTENSION, CLIMA, extraerDias } from './lexicon.js';
+import { clasificar } from './clasificador.js';
+
+// Umbrales de confianza del clasificador (probabilidad de la clase ganadora)
+export const UMBRAL_ALTA = 0.7;
+export const UMBRAL_MEDIA = 0.45;
 
 export function normalizar(texto) {
   return (texto || '')
@@ -33,12 +38,23 @@ export function extraer(texto) {
 
   const total = puntajes.reduce((a, x) => a + x.n, 0);
   const top = puntajes[0];
-  let confianza = 'baja';
-  if (top) {
+  let sintomaId = null, confianza = 'baja', prob = null, metodo = 'reglas', ranking = [];
+
+  const c = clasificar(texto);   // modelo entrenado (si ya cargó)
+  if (c) {
+    metodo = 'modelo';
+    prob = c.p;
+    ranking = c.ranking.slice(0, 3).map((r) => ({ id: r.clase, p: Math.round(r.p * 100) }));
+    confianza = c.p >= UMBRAL_ALTA ? 'alta' : c.p >= UMBRAL_MEDIA ? 'media' : 'baja';
+    sintomaId = c.mejor === 'otro' || confianza === 'baja' ? null : c.mejor;
+    if (c.mejor === 'otro') confianza = 'baja';
+  } else if (top) {
     const margen = top.n - (puntajes[1]?.n || 0);
     if (top.n >= 2 && margen >= 1) confianza = 'alta';
     else if (top.n >= 1 && margen >= 1) confianza = 'media';
+    sintomaId = confianza !== 'baja' ? top.s.id : null;
   }
+  const s = SINTOMAS.find((x) => x.id === sintomaId);
 
   const cultivo = mejor(t, CULTIVOS) || CULTIVOS[0];
   const parte = mejor(t, PARTES);
@@ -50,10 +66,13 @@ export function extraer(texto) {
     texto_original: texto,
     cultivo: cultivo.id,
     cultivo_nombre: cultivo.nombre,
-    sintoma: top && confianza !== 'baja' ? top.s.id : 'no_claro',
-    sintoma_tecnico: top && confianza !== 'baja' ? top.s.tecnico : 'No queda claro: pasa a revisión del técnico',
-    sintoma_sencillo: top ? top.s.sencillo : null,
-    otros_posibles: puntajes.slice(1, 3).map((x) => x.s.id),
+    sintoma: s ? s.id : 'no_claro',
+    sintoma_tecnico: s ? s.tecnico : 'No queda claro: pasa a revisión del técnico',
+    sintoma_sencillo: s ? s.sencillo : null,
+    otros_posibles: ranking.length ? ranking.slice(1).filter((r) => r.p >= 5).map((r) => `${r.id} (${r.p}%)`) : puntajes.slice(1, 3).map((x) => x.s.id),
+    probabilidad: prob !== null ? Math.round(prob * 100) : null,
+    metodo,
+    pistas: puntajes.map((x) => x.s.id),
     parte: parte?.id || null,
     parte_nombre: parte?.nombre || null,
     extension: extension?.id || null,
@@ -69,7 +88,7 @@ export function extraer(texto) {
 // Frase de "¿entendí bien?" en palabras sencillas, para leer en voz alta.
 export function leerDeVuelta(r) {
   const partes = [];
-  if (r.sintoma_sencillo && r.confianza !== 'baja') partes.push(`tu ${r.cultivo_nombre.toLowerCase()} tiene ${r.sintoma_sencillo}`);
+  if (r.sintoma_sencillo && r.sintoma !== 'no_claro') partes.push(`tu ${r.cultivo_nombre.toLowerCase()} tiene ${r.sintoma_sencillo}`);
   else partes.push(`algo le pasa a tu ${r.cultivo_nombre.toLowerCase()}, pero no lo entendí bien`);
   if (r.extension_nombre) partes.push(`en ${r.extension_nombre.toLowerCase()}`);
   if (r.dias) partes.push(`desde hace unos ${r.dias} días`);

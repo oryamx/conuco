@@ -6,6 +6,7 @@ const K_PERFIL = 'conuco.perfil';
 const K_COLA = 'conuco.cola';          // reportes guardados en el teléfono, sin enviar
 const K_COOP = 'conuco.cooperativa';   // reportes que ya llegaron a la cooperativa
 const K_ALERTAS = 'conuco.alertas';    // alertas aprobadas por el técnico
+const K_CORR = 'conuco.correcciones'; // validaciones/correcciones del técnico (alimentan el reentrenamiento)
 
 const canal = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('conuco') : null;
 
@@ -50,8 +51,14 @@ export function aprobarAlerta(a) {
   canal?.postMessage({ tipo: 'alerta', alerta: a });
 }
 
+export const getCorrecciones = () => leer(K_CORR, {});
+export function corregir(id, cambios) {
+  const c = getCorrecciones(); c[id] = { ...(c[id] || {}), ...cambios, cuando: Date.now() }; escribir(K_CORR, c);
+  canal?.postMessage({ tipo: 'correccion', id });
+}
+
 export function borrarTodo() {
-  [K_COLA, K_COOP, K_ALERTAS].forEach((k) => localStorage.removeItem(k));
+  [K_COLA, K_COOP, K_ALERTAS, K_CORR].forEach((k) => localStorage.removeItem(k));
 }
 
 export function escuchar(fn) { canal?.addEventListener('message', (e) => fn(e.data)); }

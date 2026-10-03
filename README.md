@@ -24,17 +24,37 @@ Conuco **no diagnostica ni receta**: anota lo que la persona ve y avisa a una pe
 - Demo: en Boconó hay 4 reportes sintéticos de roya; al grabar el 5.º desde la app, aparece la alerta de brote.
 - `?modelo=tiny` usa Whisper tiny (~40 MB) para teléfonos básicos; por defecto Whisper base (~80 MB).
 
+## Quién lo usa y quién lo administra
+| Rol | Herramienta | Qué hace |
+|---|---|---|
+| Agricultor | App en su teléfono (offline) | Habla, confirma, adjunta foto opcional, reporta |
+| Técnico / promotor de la cooperativa | Panel (`cooperativa.html`) | Revisa, valida o corrige reportes; aprueba alertas |
+| Coordinador regional (cooperativa / federación) | `modelo/entrenar.py` | Reentrena el "paquete regional" con lo validado y lo publica |
+
+La cooperativa es dueña de sus datos. La infraestructura mínima: una laptop o mini PC en la oficina y un teléfono Android como receptor de SMS (opcional: panel solar).
+
+![Arquitectura](arquitectura.png)
+
 ## Arquitectura (todo en el navegador)
 | Pieza | Tecnología | Dónde corre |
 |---|---|---|
 | Voz → texto | Whisper (base/tiny, cuantizado q8) con transformers.js + ONNX WebAssembly, en un Web Worker | Teléfono, offline |
-| Texto → ficha técnica | Lista fija de categorías + diccionario campesino (ver `lexicon.js`) | Teléfono, offline |
+| Texto → ficha técnica | **Clasificador propio** (TF-IDF de n-gramas de caracteres + regresión logística, 114 KB, `modelo_conuco.json`), con umbrales de confianza; el diccionario `lexicon.js` extrae parte de la planta, extensión, tiempo y clima y explica qué palabras reconoció | Teléfono, offline |
+| Foto (opcional) | Comprimida a 640 px JPEG (~40–80 KB), como evidencia para el técnico (no se diagnostica con IA) | Teléfono → cooperativa |
 | Lectura en voz alta | Web Speech API (voz del sistema) | Teléfono, offline |
 | App offline | Service Worker + Cache Storage | Teléfono |
 | Envío diferido | Cola local (store-and-forward) + código SMS | Teléfono |
 | Panel y alertas | Leaflet + regla de brote (≥5 reportes, ≥3 fincas, 14 días, misma zona y síntoma) | Oficina de la cooperativa |
 
 En este prototipo la "cooperativa" es el panel del mismo sitio (almacenamiento compartido del navegador). En producción el envío iría a un servidor de la cooperativa o a una pasarela SMS.
+
+## Conuco aprende con el uso
+1. El agricultor corrige tocando un dibujo, o el técnico valida/corrige el reporte en el panel.
+2. El panel acumula esas frases validadas y permite descargarlas (`frases_validadas.txt`).
+3. `python3 modelo/entrenar.py --entrenar-con frases_validadas.txt` reentrena el modelo con la jerga real de la zona.
+4. El nuevo `modelo_conuco.json` (~100 KB) se envía a los teléfonos cuando hay señal.
+
+Métrica actual: 20/20 en un set de prueba aparte (**escrito por el mismo equipo, por lo que es optimista**); ver `modelo/entrenar.py` para reproducir.
 
 ## Datos
 - `reportes_sinteticos.json` y `generar_sinteticos.py`: **datos sintéticos** para la demo, marcados como tales.

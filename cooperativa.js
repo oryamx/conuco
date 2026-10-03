@@ -1,4 +1,4 @@
-import { ZONAS, getCooperativa, getAlertas, aprobarAlerta, borrarTodo, escuchar } from './store.js';
+import { ZONAS, getCooperativa, getAlertas, aprobarAlerta, borrarTodo, escuchar, getCorrecciones, corregir } from './store.js';
 import { SINTOMAS } from './lexicon.js';
 
 const $ = (id) => document.getElementById(id);
@@ -33,13 +33,20 @@ function todos() {
     const semilla = [...(r.id || 'x')].reduce((a, c) => a + c.charCodeAt(0), 0);
     return { ...r, lat: r.lat ?? z.lat + ((semilla % 50) - 25) / 1000, lng: r.lng ?? z.lng + ((semilla % 37) - 18) / 1000 };
   });
-  return [...sint, ...reales].filter((r) => ahora - r.fecha <= 30 * DIA).sort((a, b) => b.fecha - a.fecha);
+  const corr = getCorrecciones();
+  return [...sint, ...reales].map((r) => {
+    const c = corr[r.id];
+    if (!c) return r;
+    const s = SINTOMAS.find((x) => x.id === c.sintoma);
+    return { ...r, sintoma_ia: r.sintoma, sintoma: c.sintoma, validado: true, corregido_tecnico: c.sintoma !== r.sintoma,
+      sintoma_tecnico: s ? s.tecnico : 'No es un problema del cultivo / descartado', descartado: c.sintoma === 'descartado' };
+  }).filter((r) => ahora - r.fecha <= 30 * DIA).sort((a, b) => b.fecha - a.fecha);
 }
 
 function detectarBrotes(reps) {
   const ahora = Date.now();
   const grupos = {};
-  reps.filter((r) => ahora - r.fecha <= UMBRAL.dias * DIA && r.sintoma !== 'no_claro').forEach((r) => {
+  reps.filter((r) => ahora - r.fecha <= UMBRAL.dias * DIA && r.sintoma !== 'no_claro' && !r.descartado).forEach((r) => {
     const k = r.zona + '|' + r.sintoma;
     (grupos[k] ||= []).push(r);
   });
@@ -62,7 +69,10 @@ function pintar() {
   const aprobadas = getAlertas();
   $('kRep').textContent = reps.length;
   $('kFin').textContent = new Set(reps.map((r) => r.finca)).size;
-  $('kRev').textContent = reps.filter((r) => r.confianza !== 'alta').length;
+  $('kRev').textContent = reps.filter((r) => r.confianza !== 'alta' && !r.validado).length;
+  const validados = reps.filter((r) => r.validado);
+  $('kEnt').textContent = validados.length;
+  $('kCorr').textContent = validados.filter((r) => r.corregido_tecnico).length;
   $('kAle').textContent = brotes.length;
 
   capa.clearLayers();
@@ -70,7 +80,7 @@ function pintar() {
     L.circleMarker([r.lat, r.lng], {
       radius: r.sintetico ? 6 : 10, color: r.sintetico ? '#fff' : '#000', weight: r.sintetico ? 1 : 3,
       fillColor: COLOR[r.sintoma] || '#999', fillOpacity: 0.85,
-    }).bindPopup(`<b>${CORTO[r.sintoma]}</b> · ${r.sintetico ? 'sintético' : 'reporte real de la app'}<br>“${r.texto_original}”<br><small>${new Date(r.fecha).toLocaleDateString('es-VE')} · confianza ${r.confianza}</small>`).addTo(capa);
+    }).bindPopup(`${r.foto ? `<img src="${r.foto}" style="width:180px;border-radius:8px;display:block;margin-bottom:6px">` : ''}<b>${CORTO[r.sintoma] || r.sintoma}</b> · ${r.sintetico ? 'sintético' : 'reporte real de la app'}<br>“${r.texto_original}”<br><small>${new Date(r.fecha).toLocaleDateString('es-VE')} · confianza ${r.confianza}</small>`).addTo(capa);
   });
   if (!encuadrado && reps.length) { mapa.fitBounds(L.latLngBounds(reps.map((r) => [r.lat, r.lng])).pad(0.15)); encuadrado = true; }
   $('leyenda').innerHTML = Object.entries(CORTO).map(([k, v]) => `<span><i style="background:${COLOR[k]}"></i>${v}</span>`).join('') + '<span>● borde negro = reporte real</span>';
@@ -91,16 +101,32 @@ function pintar() {
   }));
 
   const recientes = reps.slice(0, 25);
-  $('lista').innerHTML = '<tr><th>Cuándo</th><th>Zona</th><th>Lo que dijo el agricultor</th><th>Cómo lo anotó Conuco</th><th>Confianza</th></tr>' +
+  const opciones = (sel) => [...SINTOMAS.map((x) => [x.id, CORTO[x.id]]), ['no_claro', 'no claro'], ['descartado', 'no es problema / descartar']]
+    .map(([id, n]) => `<option value="${id}" ${id === sel ? 'selected' : ''}>${n}</option>`).join('');
+  $('lista').innerHTML = '<tr><th>Cuándo</th><th>Zona</th><th>Foto</th><th>Lo que dijo el agricultor</th><th>Cómo lo anotó Conuco</th><th>Confianza</th><th>Revisión del técnico</th></tr>' +
     recientes.map((r) => `<tr class="${!r.sintetico && Date.now() - r.recibido < 120000 ? 'nuevo' : ''}">
       <td>${new Date(r.fecha).toLocaleDateString('es-VE', { day: 'numeric', month: 'short' })}</td>
       <td>${ZONAS[r.zona]?.nombre.split(' (')[0] || r.zona}</td>
+      <td>${r.foto ? `<a href="${r.foto}" target="_blank"><img src="${r.foto}" style="width:56px;height:56px;object-fit:cover;border-radius:8px"></a>` : '<span class="pista">—</span>'}</td>
       <td>“${r.texto_original}” ${r.sintetico ? '<span class="tag">sintético</span>' : '<span class="tag" style="background:#e5f0e3">app</span>'}</td>
-      <td>${r.sintoma_tecnico}</td>
-      <td><span class="conf ${r.confianza}">${r.confianza}</span></td></tr>`).join('');
+      <td>${r.sintoma_tecnico}${r.corregido_tecnico ? `<br><span class="pista">IA dijo: ${CORTO[r.sintoma_ia] || r.sintoma_ia}</span>` : ''}</td>
+      <td><span class="conf ${r.confianza}">${r.confianza}</span></td>
+      <td>${r.validado ? `<span class="conf alta">✔ ${r.corregido_tecnico ? 'corregido' : 'validado'}</span>` : `<select data-id="${r.id}" style="padding:6px;font-size:.8rem">${opciones(r.sintoma)}</select>
+        <button class="btn si" data-validar="${r.id}" style="padding:6px 10px;font-size:.8rem;margin-top:4px">Validar</button>`}</td></tr>`).join('');
+  $('lista').querySelectorAll('[data-validar]').forEach((b) => b.addEventListener('click', () => {
+    const id = b.dataset.validar;
+    corregir(id, { sintoma: $('lista').querySelector(`select[data-id="${id}"]`).value });
+    pintar();
+  }));
 }
 
 $('verSint').addEventListener('change', pintar);
+$('descargar').addEventListener('click', () => {
+  const lineas = todos().filter((r) => r.validado && !r.descartado && r.sintoma !== 'no_claro')
+    .map((r) => `${r.sintoma} | ${r.texto_original.replace(/\n/g, ' ')}`);
+  const blob = new Blob([lineas.join('\n') + '\n'], { type: 'text/plain' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'frases_validadas.txt'; a.click();
+});
 $('reiniciar').addEventListener('click', (e) => { e.preventDefault(); if (confirm('¿Borrar los reportes y alertas de la demo en este dispositivo?')) { borrarTodo(); pintar(); } });
 escuchar(() => pintar());
 window.addEventListener('storage', pintar);
