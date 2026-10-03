@@ -99,3 +99,69 @@ PRUEBA = [
     ("buenas, quería avisar de un problema", "otro"),
     ("algo raro tienen las matas", "otro"),
 ]
+
+
+# ======================= MAÍZ =======================
+SINTOMAS_MAIZ = {
+    "cogollero": [
+        "el cogollo está comido", "le cayó el cogollero al maíz", "tiene un gusano metido en el cogollo",
+        "las hojas nuevas salen llenas de huecos", "el cogollo tiene como aserrín", "un gusano se está comiendo las hojas del maíz",
+        "las matas de maíz tienen las hojas agujereadas", "en el centro de la mata hay como excremento y un gusano",
+        "las hojitas del medio están rotas y comidas", "el maíz chiquito amaneció con las hojas mordidas",
+        "hay gusanos verdes con rayas en el cogollo", "las hojas parecen ventanitas, raspadas",
+    ],
+    "raiz_maiz": [
+        "las matas se están cayendo solas", "las matas se marchitan aunque haya agua", "saqué una mata y la raíz está comida",
+        "hay gusanos blancos gorditos en la tierra", "le cayó la gallina ciega", "las matas se acuestan y se arrancan fácil",
+        "las raíces están mochas", "la mata se pone mustia y se muere", "un gusanito como alfiler en la raíz",
+        "las matas jóvenes se secan de un día para otro",
+    ],
+    "mazorca": [
+        "las mazorcas tienen la punta comida", "las mazorcas salieron podridas", "el jojoto tiene un gusano en la punta",
+        "la mazorca tiene moho blanco", "los granos de la mazorca están negros y podridos", "la mazorca tiene como un hongo rosado",
+        "al abrir la mazorca estaba dañada por dentro", "las mazorcas se pudren en la mata con tanta lluvia",
+        "la barba de la mazorca está comida",
+    ],
+    "gorgojo": [
+        "el maíz guardado se llenó de gorgojos", "los granos en el saco tienen huequitos", "el maíz almacenado tiene polvillo y bichitos",
+        "salen bichitos negros del maíz guardado", "se me está picando el maíz en el depósito", "el grano guardado está vacío y con polvo",
+        "el maíz de semilla se lo comió el gorgojo",
+    ],
+    "sequia_maiz": [
+        "las hojas del maíz se enrollan", "las hojas están como enroscadas por el sol", "no ha llovido y el maíz se está secando",
+        "con este verano las matas están tristes y enrolladas", "falta agua y las hojas se arrugan", "el maizal se está quemando por la sequía",
+        "las puntas de las hojas se secan por el calor",
+    ],
+    "nutricion_maiz": [
+        "las matas de maíz están amarillas", "las hojas de abajo se ponen amarillas desde la punta", "el maíz salió chiquito y débil",
+        "las hojas tienen un color morado", "las mazorcas salieron pequeñitas", "el maíz no creció parejo, está pálido",
+        "las matas están flacas y amarillentas", "las hojas tienen rayas amarillas a lo largo",
+    ],
+    "manchas_maiz": [
+        "las hojas tienen manchas negras como de asfalto", "salieron puntos negros brillantes en las hojas", "las hojas tienen manchas marrones alargadas",
+        "las hojas tienen como óxido en polvo", "manchas grandes secas en las hojas de abajo", "las hojas se ven quemadas con manchas largas",
+        "unos puntitos negros que no se quitan al rascar",
+    ],
+    "otro": [
+        "no sé qué le pasa al maíz", "el maíz está feo", "algo raro tiene el maizal", "quiero que venga el técnico a ver el maíz",
+        "las matas de maíz no se ven bien", "buenas, es para reportar algo en el maíz", "no sé explicar lo que tiene la siembra",
+    ],
+}
+
+SUJETOS_MAIZ = ["", "el maíz", "las matas de maíz", "el maizal", "mi conuco", "la siembra", "las matas nuevas", "el lote de abajo", "las matas de la orilla"]
+CONTEXTOS_MAIZ = ["", "desde que llovió", "hace como una semana", "con este verano", "en casi todo el maizal", "en unas pocas matas",
+                  "desde la semana pasada", "y me preocupa", "y los vecinos dicen que también", "ahorita que está jojoteando"]
+
+PRUEBA_MAIZ = [
+    ("chamo el gusano se metió en el cogollo y lo dejó lleno de aserrín", "cogollero"),
+    ("las hojas del maíz chiquito están todas agujereadas", "cogollero"),
+    ("las matas se tumban solas y la raíz está comida", "raiz_maiz"),
+    ("encontré unos gusanos blancos gordos escarbando", "raiz_maiz"),
+    ("los jojotos tienen la punta podrida", "mazorca"),
+    ("la mazorca salió con moho por dentro", "mazorca"),
+    ("el maíz del saco se llenó de bichitos y polvo", "gorgojo"),
+    ("las hojas están enroscadas porque no llueve", "sequia_maiz"),
+    ("el maíz está amarillito y no crece", "nutricion_maiz"),
+    ("las hojas tienen puntos negros como asfalto", "manchas_maiz"),
+    ("no sé qué tiene el maíz, se ve raro", "otro"),
+]

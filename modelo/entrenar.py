@@ -12,7 +12,17 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, accuracy_score
 
 sys.path.insert(0, str(Path(__file__).parent))
-from frases import SINTOMAS, SUJETOS, INICIOS, CONTEXTOS, PRUEBA
+import frases
+from frases import INICIOS
+
+# --cultivo cafe|maiz  (por defecto café)
+CULTIVO = "cafe"
+if "--cultivo" in sys.argv:
+    i = sys.argv.index("--cultivo"); CULTIVO = sys.argv[i + 1]; del sys.argv[i:i + 2]
+if CULTIVO == "maiz":
+    SINTOMAS, SUJETOS, CONTEXTOS, PRUEBA = frases.SINTOMAS_MAIZ, frases.SUJETOS_MAIZ, frases.CONTEXTOS_MAIZ, frases.PRUEBA_MAIZ
+else:
+    SINTOMAS, SUJETOS, CONTEXTOS, PRUEBA = frases.SINTOMAS, frases.SUJETOS, frases.CONTEXTOS, frases.PRUEBA
 
 random.seed(42)
 
@@ -87,6 +97,7 @@ keep = np.where(np.abs(coef).max(0) >= 0.0)[0]
 mapa_nuevo = {old: new for new, old in enumerate(keep)}
 modelo = {
     "version": 1,
+    "cultivo": CULTIVO,
     "tipo": "tfidf_char_wb_2_4 + logistic_regression",
     "clases": list(clf.classes_),
     "ngram": [2, 4],
@@ -97,11 +108,11 @@ modelo = {
     "metricas": {"exactitud_prueba": acc_prueba, "exactitud_gabi": acc_gabi, "n_entrenamiento": len(X), "n_prueba": len(PRUEBA)},
     "nota": "Entrenado con frases sintéticas. Reentrenar con reportes reales confirmados por técnicos.",
 }
-salida = Path(__file__).parent.parent / "modelo_conuco.json"
+salida = Path(__file__).parent.parent / ("modelo_maiz.json" if CULTIVO == "maiz" else "modelo_conuco.json")
 salida.write_text(json.dumps(modelo, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
 print(f"\nModelo exportado: {salida} · {salida.stat().st_size/1024:.0f} KB · {len(keep)} rasgos · {len(X)} frases de entrenamiento")
 
 # Casos de verificación para comparar Python vs JavaScript
-casos = ["las hojas están como oxidadas por debajo y se están cayendo", "el grano sale con un huequito", "no sé qué tiene la mata"]
+casos = [t for t, _ in PRUEBA[:3]]
 ver = {t: [round(float(p), 4) for p in clf.predict_proba(vec.transform([t]))[0]] for t in casos}
-(Path(__file__).parent / "verificacion.json").write_text(json.dumps(ver, ensure_ascii=False), encoding="utf-8")
+(Path(__file__).parent / f"verificacion_{CULTIVO}.json").write_text(json.dumps(ver, ensure_ascii=False), encoding="utf-8")
