@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.tile.openstreetmap.org; connect-src 'self' https://huggingface.co https://*.huggingface.co https://*.hf.co https://cdn.jsdelivr.net; media-src 'self' blob:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Conuco · Línea de voz</title>
+  <meta name="theme-color" content="#2f6b3b">
+  <link rel="icon" href="conuco.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="estilo.css">
+  <style>
+    .telefono { max-width: 340px; margin: 0 auto; background: #1f2a22; border-radius: 34px; padding: 18px 16px 22px; color: #d6f5d0; box-shadow: 0 12px 30px rgba(0,0,0,.25); }
+    .pantalla { background: #c8d8b0; color: #1f2a22; border-radius: 12px; padding: 10px; min-height: 120px; font-family: ui-monospace, Menlo, monospace; font-size: .85rem; }
+    .pantalla .estado-llamada { font-weight: 800; margin-bottom: 6px; }
+    .teclado { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
+    .tecla { background: #33463a; color: #fff; border: none; border-radius: 14px; padding: 14px 0; font-size: 1.3rem; font-weight: 700; cursor: pointer; }
+    .tecla:active { background: #4c9a5a; }
+    .tecla small { display: block; font-size: .55rem; font-weight: 400; opacity: .7; }
+    .acciones { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+    .llamar { background: #2e9e4f; } .colgar { background: #b3261e; }
+    #registro { font-size: .85rem; max-height: 320px; overflow: auto; }
+    #registro p { margin: 4px 0; } #registro .ivr { color: var(--hoja); } #registro .yo { color: var(--tierra); text-align: right; }
+    @media (max-width: 700px) { main .grid { grid-template-columns: 1fr !important; } }
+    .grabando { animation: parpadeo 1s infinite; } @keyframes parpadeo { 50% { opacity: .4; } }
+  </style>
+</head>
+<body>
+<main class="app" style="max-width:760px">
+  <header class="barra">
+    <div class="marca"><img src="conuco.svg" alt=""> Conuco · Línea de voz</div>
+    <div class="estado"><span id="chipModelo" class="chip">IA: cargando</span></div>
+  </header>
+
+  <div class="tarjeta" style="background:#fff7e8">
+    <b>📞 Para quien solo tiene un teléfono básico.</b> El agricultor llama a la línea de su cooperativa, responde con el teclado y cuenta el problema con su voz.
+    La IA (la misma de la app) corre en el equipo de la cooperativa, no en el teléfono del agricultor. <b>Esto es un simulador:</b> la conexión con una línea telefónica real
+    (un Android de la cooperativa como pasarela o un proveedor de telefonía) es el siguiente paso.
+  </div>
+
+  <div class="grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:start">
+    <div>
+      <div class="telefono">
+        <div class="pantalla">
+          <div class="estado-llamada" id="estadoLlamada">Listo para llamar</div>
+          <div id="pantallaTexto">Marque la línea de su cooperativa y pulse 📞</div>
+        </div>
+        <div class="teclado" id="teclado">
+          <button class="tecla" data-k="1">1</button><button class="tecla" data-k="2">2<small>ABC</small></button><button class="tecla" data-k="3">3<small>DEF</small></button>
+          <button class="tecla" data-k="4">4<small>GHI</small></button><button class="tecla" data-k="5">5<small>JKL</small></button><button class="tecla" data-k="6">6<small>MNO</small></button>
+          <button class="tecla" data-k="7">7<small>PQRS</small></button><button class="tecla" data-k="8">8<small>TUV</small></button><button class="tecla" data-k="9">9<small>WXYZ</small></button>
+          <button class="tecla" data-k="*">*</button><button class="tecla" data-k="0">0</button><button class="tecla" data-k="#">#</button>
+        </div>
+        <div class="acciones">
+          <button class="tecla llamar" id="btnLlamar">📞</button>
+          <button class="tecla colgar" id="btnColgar">✆</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="tarjeta">
+        <label for="numero" style="margin-top:0">Número que llama (identificador de llamada)</label>
+        <input id="numero" type="text" inputmode="numeric" maxlength="15" value="04145550123">
+        <p class="pista" id="estadoNumero"></p>
+        <details>
+          <summary>Registrar este número (lo hace el promotor)</summary>
+          <label for="zonaReg">Zona</label><select id="zonaReg"></select>
+          <label for="cultivoReg">Cultivo</label><select id="cultivoReg"><option value="cafe">☕ Café</option><option value="maiz">🌽 Maíz</option></select>
+          <button id="btnRegistrar" class="btn sec" style="margin-top:8px">Registrar número</button>
+        </details>
+      </div>
+      <div class="tarjeta"><h2>📝 Lo que pasa en la llamada</h2><div id="registro"><p class="pista">Aún no hay llamada.</p></div></div>
+    </div>
+  </div>
+  <p class="pie"><a href="index.html">📱 App del agricultor</a> · <a href="cooperativa.html">Panel de la cooperativa →</a></p>
+</main>
+<script type="module" src="llamada.js"></script>
+</body>
+</html>

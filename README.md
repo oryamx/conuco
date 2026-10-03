@@ -2,7 +2,9 @@
 
 **Hack-Nation 7th Global AI Hackathon · World Bank "Small AI for Development" · Track B: Agriculture**
 
-🔗 **Live demo:** https://oryamx.github.io/conuco/ (farmer app) · https://oryamx.github.io/conuco/cooperativa.html (cooperative panel)
+🔗 **Live demo:** https://oryamx.github.io/conuco/ (farmer app) · https://oryamx.github.io/conuco/cooperativa.html (cooperative panel) · https://oryamx.github.io/conuco/llamada.html (voice line simulator for basic phones)
+
+🛡️ **Security:** threat model + 21 automated attack tests, all passing → [SECURITY.md](SECURITY.md)
 
 > *Conuco* is the Venezuelan word for a small family farm plot.
 
@@ -22,6 +24,13 @@ Everyone builds AI that **talks to** farmers. Conuco is AI that **listens to** t
 6. A **technician or cooperative promoter reviews and approves** the alert, which goes back to every farm in the area in plain language (voice/SMS).
 
 Conuco **does not diagnose or prescribe**. It records what the person sees and tells a person. When it is not sure, it says so.
+
+## Three ways to report — including basic phones
+| Channel | For whom | How |
+|---|---|---|
+| 📱 App (offline) | Farmers with a smartphone (even a shared one) | Voice → on-device AI → record → sent when signal returns |
+| 📩 Signed SMS | Smartphone but no mobile data | The app produces a ~60-char SMS with an HMAC signature; the cooperative verifies it (forged, replayed or unregistered SMS are rejected) |
+| 📞 Voice line | **Basic phones** (Noor's own phone) | Call the cooperative line → keypad menu → speak after the tone → AI runs on the cooperative's device → confirm with the keypad. If the AI doesn't understand, the farmer picks the problem with the keypad. *Prototype: browser simulator; connecting a real phone line (an Android gateway at the cooperative or a telephony provider) is the next step.* |
 
 ## Two crops, two tiny model packs
 | Pack | Why | Categories (fixed list + "not sure") | Model size |
@@ -89,11 +98,13 @@ A model pack per region or language is ~130 KB — small enough to send over a w
 
 ## What it does not cover (yet)
 - No real farmer data yet; vocabulary and reports are test data.
-- Needs a smartphone (even a shared one). Next step: a voice line (IVR) for basic phones.
+- The voice line for basic phones is a **simulator**: the real telephony connection is not built yet.
+- No backend yet (see SECURITY.md for the full list of limitations).
 - Similar systems exist (e.g. FAO's FAMEWS for fall armyworm). Conuco's difference is *how* reports are made: by voice, in the farmer's own words, fully offline.
 
 ## Responsible by design
 - A person always has the last word (the farmer confirms; the technician approves alerts).
+- Only registered farms count toward alerts; signed SMS; anti-spam caps; strict validation; CSP. See [SECURITY.md](SECURITY.md).
 - Fixed list of answers: it cannot invent diagnoses or prescribe agrochemicals.
 - Voice notes **never leave the phone**; only the text record travels, without the farmer's name and with consent.
 

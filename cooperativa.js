@@ -1,9 +1,9 @@
-import { ZONAS, getCooperativa, getAlertas, aprobarAlerta, borrarTodo, escuchar, getCorrecciones, corregir } from './store.js';
+import { ZONAS, getCooperativa, getAlertas, aprobarAlerta, borrarTodo, escuchar, getCorrecciones, corregir, recibirSMS, getRechazados, contablesParaAlertas } from './store.js';
+import { validarReporte, esc } from './seguridad.js';
 import { SINTOMAS } from './lexicon.js';
 
 const $ = (id) => document.getElementById(id);
 // Seguridad: todo lo que viene de un reporte (texto del agricultor, ids, fotos) es dato no confiable.
-const esc = (v) => String(v ?? '').replace(/[&<>"'`]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '`': '&#96;' }[c]));
 const fotoSegura = (f) => (typeof f === 'string' && /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(f) ? f : null);
 const CONF_OK = ['alta', 'media', 'baja'];
 const confSegura = (c) => (CONF_OK.includes(c) ? c : 'baja');
@@ -41,7 +41,8 @@ const capa = L.layerGroup().addTo(mapa);
 function todos() {
   const ahora = Date.now();
   const sint = $('verSint').checked ? sinteticos.map((r) => ({ ...r, fecha: ahora - r.hace_dias * DIA - 3600000 })) : [];
-  const reales = getCooperativa().map((r) => {
+  // Defensa en profundidad: se vuelve a validar todo lo que está guardado antes de mostrarlo.
+  const reales = getCooperativa().filter((r) => validarReporte(r, ZONAS).ok).map((r) => {
     const z = ZONAS[r.zona] || ZONAS.BO;
     const semilla = [...(r.id || 'x')].reduce((a, c) => a + c.charCodeAt(0), 0);
     return { ...r, lat: r.lat ?? z.lat + ((semilla % 50) - 25) / 1000, lng: r.lng ?? z.lng + ((semilla % 37) - 18) / 1000 };
@@ -59,9 +60,11 @@ function todos() {
 function detectarBrotes(reps) {
   const ahora = Date.now();
   const grupos = {};
-  reps.filter((r) => ahora - r.fecha <= UMBRAL.dias * DIA && r.sintoma !== 'no_claro' && !r.descartado).forEach((r) => {
+  contablesParaAlertas(reps).filter((r) => ahora - r.fecha <= UMBRAL.dias * DIA && r.sintoma !== 'no_claro' && !r.descartado).forEach((r) => {
     const k = r.zona + '|' + r.sintoma;
-    (grupos[k] ||= []).push(r);
+    const g = (grupos[k] ||= []);
+    // Anti-spam: cada finca aporta como máximo 2 reportes al mismo posible brote.
+    if (g.filter((x) => x.finca === r.finca).length < 2) g.push(r);
   });
   return Object.entries(grupos)
     .map(([k, rs]) => ({ zona: k.split('|')[0], sintoma: k.split('|')[1], reportes: rs.length, fincas: new Set(rs.map((r) => r.finca)).size, reales: rs.filter((r) => !r.sintetico).length, clima: rs.filter((r) => r.clima === 'lluvia').length }))
@@ -114,6 +117,7 @@ function pintar() {
     pintar();
   }));
 
+  pintarRechazados();
   const recientes = reps.slice(0, 25);
   const opciones = (sel) => [...SINTOMAS.map((x) => [x.id, CORTO[x.id]]), ['no_claro', 'no claro'], ['descartado', 'no es problema / descartar']]
     .map(([id, n]) => `<option value="${id}" ${id === sel ? 'selected' : ''}>${n}</option>`).join('');
@@ -122,7 +126,7 @@ function pintar() {
       <td>${new Date(r.fecha).toLocaleDateString('es-VE', { day: 'numeric', month: 'short' })}</td>
       <td>${esc(ZONAS[r.zona]?.nombre.split(' (')[0] || r.zona)}</td>
       <td>${fotoSegura(r.foto) ? `<img src="${fotoSegura(r.foto)}" alt="foto del reporte" style="width:56px;height:56px;object-fit:cover;border-radius:8px">` : '<span class="pista">—</span>'}</td>
-      <td>“${esc(r.texto_original)}” ${r.sintetico ? '<span class="tag">sintético</span>' : '<span class="tag" style="background:#e5f0e3">app</span>'}</td>
+      <td>“${esc(r.texto_original)}” ${r.sintetico ? '<span class="tag">sintético</span>' : `<span class="tag" style="background:#e5f0e3">${esc({ sms: '📩 SMS', llamada: '📞 llamada' }[r.canal] || '📱 app')}</span>`}${!r.sintetico && !r.registrada ? ' <span class="tag" style="background:#fbe3e1">⚠ finca no registrada: no cuenta para alertas</span>' : ''}</td>
       <td>${esc(r.sintoma_tecnico)}${r.corregido_tecnico ? `<br><span class="pista">IA dijo: ${esc(CORTO[r.sintoma_ia] || r.sintoma_ia)}</span>` : ''}</td>
       <td><span class="conf ${confSegura(r.confianza)}">${confSegura(r.confianza)}</span></td>
       <td>${r.validado ? `<span class="conf alta">✔ ${r.corregido_tecnico ? 'corregido' : 'validado'}</span>` : `<select data-id="${esc(r.id)}" style="padding:6px;font-size:.8rem">${opciones(r.sintoma)}</select>
@@ -135,6 +139,21 @@ function pintar() {
 }
 
 $('verSint').addEventListener('change', pintar);
+$('btnSMS').addEventListener('click', async () => {
+  const lineas = $('smsEntrada').value.split('\n').map((l) => l.trim()).filter(Boolean).slice(0, 20);
+  const out = [];
+  for (const l of lineas) {
+    const r = await recibirSMS(l);
+    out.push(r.ok ? `✅ aceptado: ${esc(l.slice(0, 40))}…` : `❌ rechazado (${esc(r.motivo)}): ${esc(l.slice(0, 40))}…`);
+  }
+  $('smsResultado').innerHTML = out.join('<br>');
+  pintar();
+});
+function pintarRechazados() {
+  const r = getRechazados();
+  $('nRech').textContent = r.length;
+  $('listaRech').innerHTML = r.slice(-6).reverse().map((x) => `<li>${new Date(x.cuando).toLocaleTimeString('es-VE')} · ${esc(x.fuente)} · <b>${esc(x.motivo)}</b> · <code>${esc(x.muestra)}</code></li>`).join('') || '<li>Ninguno</li>';
+}
 $('descargar').addEventListener('click', () => {
   const lineas = todos().filter((r) => r.validado && !r.descartado && r.sintoma !== 'no_claro')
     .map((r) => `${r.sintoma} | ${String(r.texto_original).replace(/[\n|]/g, ' ')}`);

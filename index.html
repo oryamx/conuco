@@ -2,6 +2,8 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.tile.openstreetmap.org; connect-src 'self' https://huggingface.co https://*.huggingface.co https://*.hf.co https://cdn.jsdelivr.net; media-src 'self' blob:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Conuco</title>
   <meta name="description" content="Cuaderno de campo por voz que funciona sin internet ni luz.">
@@ -93,7 +95,7 @@
     <section id="avisos"></section>
 
     <p class="pie">Conuco no da diagnósticos ni recetas: anota lo que ves y avisa al técnico.<br>
-      <a href="cooperativa.html">Panel de la cooperativa →</a> · <a href="#" id="lnkPerfil">Cambiar finca</a></p>
+      <a href="cooperativa.html">Panel de la cooperativa →</a> · <a href="#" id="lnkPerfil">Cambiar finca</a> · <a href="#" id="lnkBorrar">Borrar mis datos</a><br><a href="llamada.html">📞 ¿Sin smartphone? Línea de voz</a></p>
   </section>
 </main>
 <script type="module" src="app.js"></script>

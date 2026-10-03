@@ -109,7 +109,7 @@ export function leerDeVuelta(r) {
 }
 
 // Código corto para mandar por SMS cuando no hay datos (cabe en un SMS de 160 caracteres).
-const COD = { cogollero: 'CG', raiz_maiz: 'RZ', mazorca: 'MZ', gorgojo: 'GG', sequia_maiz: 'SQ', nutricion_maiz: 'NM', manchas_maiz: 'MM', come_hojas: 'CH', roya: 'RY', broca: 'BR', minador: 'MN', ojo_de_gallo: 'OG', mancha_hierro: 'MH', muerte_descendente: 'MD', nutricion: 'NU', no_claro: 'NC' };
+export const COD = { cogollero: 'CG', raiz_maiz: 'RZ', mazorca: 'MZ', gorgojo: 'GG', sequia_maiz: 'SQ', nutricion_maiz: 'NM', manchas_maiz: 'MM', come_hojas: 'CH', roya: 'RY', broca: 'BR', minador: 'MN', ojo_de_gallo: 'OG', mancha_hierro: 'MH', muerte_descendente: 'MD', nutricion: 'NU', no_claro: 'NC' };
 export function codigoSMS(r, perfil) {
   const fecha = new Date(r.fecha).toISOString().slice(2, 10).replace(/-/g, '');
   return [

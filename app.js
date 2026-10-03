@@ -1,7 +1,8 @@
 import { extraer, leerDeVuelta, codigoSMS } from './extract.js';
+import { firmarSMS } from './seguridad.js';
 import { SINTOMAS, sintomasDe } from './lexicon.js';
 import { cargarTodos } from './clasificador.js';
-import { ZONAS, getPerfil, setPerfil, getCola, guardarEnCola, enviarCola, getAlertas, escuchar } from './store.js';
+import { ZONAS, getPerfil, setPerfil, getCola, guardarEnCola, enviarCola, getAlertas, escuchar, registrarFinca, borrarMisDatos } from './store.js';
 
 const $ = (id) => document.getElementById(id);
 const esc = (v) => String(v ?? '').replace(/[&<>"'`]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '`': '&#96;' }[c]));
@@ -27,17 +28,19 @@ $('finca').addEventListener('input', validarPerfil);
 $('consiente').addEventListener('change', validarPerfil);
 $('btnGuardarPerfil').addEventListener('click', () => {
   const previo = getPerfil();
-  setPerfil({
-    finca: $('finca').value.trim(),
-    zona: $('zona').value,
-    cultivo: $('cultivoPerfil').value,
-    codigo: previo?.codigo || 'F' + String(Math.floor(Math.random() * 900) + 100),
-    creado: previo?.creado || Date.now(),
-  });
-  pintarIconos($('cultivoPerfil').value);
+  const codigo = previo?.codigo || 'F' + String(Math.floor(Math.random() * 900) + 100);
+  const zona = $('zona').value, cultivo = $('cultivoPerfil').value;
+  // Registro de la finca en la cooperativa (en la vida real: en persona con el promotor, que entrega la clave por QR).
+  const reg = registrarFinca({ codigo, zona, cultivo });
+  setPerfil({ finca: $('finca').value.trim().slice(0, 60), zona, cultivo, codigo, clave: reg.clave, creado: previo?.creado || Date.now() });
+  pintarIconos(cultivo);
   iniciar();
 });
 $('lnkPerfil').addEventListener('click', (e) => { e.preventDefault(); mostrarPerfil(); });
+$('lnkBorrar').addEventListener('click', (e) => {
+  e.preventDefault();
+  if (confirm('¿Borrar tu perfil y los reportes guardados en este teléfono? Lo que ya se envió a la cooperativa queda allá.')) { borrarMisDatos(); location.reload(); }
+});
 
 // ---------- Estado: señal y batería ----------
 function sinSenal() { return !navigator.onLine || $('simSinSenal').checked; }
@@ -234,11 +237,11 @@ $('iconos').addEventListener('click', (e) => {
   hablar(leerDeVuelta(registroActual));
 });
 
-$('btnSi').addEventListener('click', () => {
+$('btnSi').addEventListener('click', async () => {
   if (!registroActual) return;
   const perfil = getPerfil();
-  const r = { ...registroActual, confirmado: true, finca: perfil.codigo, zona: perfil.zona, id: crypto.randomUUID(), foto: fotoActual };
-  r.sms = codigoSMS(r, perfil);
+  const r = { ...registroActual, confirmado: true, finca: perfil.codigo, zona: perfil.zona, id: crypto.randomUUID(), foto: fotoActual, canal: 'app' };
+  r.sms = await firmarSMS(codigoSMS(r, perfil), perfil.clave);
   guardarEnCola(r);
   $('vistaResultado').classList.add('oculto');
   $('vistaGuardado').classList.remove('oculto');
@@ -280,6 +283,11 @@ window.addEventListener('storage', pintarAvisos);
 // ---------- Inicio ----------
 function iniciar() {
   if (!getPerfil()) return mostrarPerfil();
+  const pf = getPerfil();
+  if (!pf.clave || !pf.cultivo) {   // perfiles creados antes del registro seguro
+    const reg = registrarFinca({ codigo: pf.codigo, zona: pf.zona, cultivo: pf.cultivo || 'cafe' });
+    setPerfil({ ...pf, cultivo: pf.cultivo || 'cafe', clave: reg.clave });
+  }
   $('vistaPerfil').classList.add('oculto');
   $('vistaPrincipal').classList.remove('oculto');
   pintarCola(); pintarAvisos();
