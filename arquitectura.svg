@@ -1,44 +1,42 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 690" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif">
   <defs>
     <marker id="f" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#5b3a29"/></marker>
     <marker id="fv" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#2f6b3b"/></marker>
   </defs>
-  <rect width="1200" height="690" fill="#faf6ef"/>
-  <text x="600" y="44" text-anchor="middle" font-size="28" font-weight="800" fill="#2f6b3b">Conuco · cómo funciona</text>
-  <text x="600" y="72" text-anchor="middle" font-size="15" fill="#6d625a">La IA corre en el teléfono. Solo viaja una ficha de texto (~1 KB) o un SMS.</text>
+  <rect width="1200" height="720" fill="#faf6ef"/>
+  <text x="600" y="44" text-anchor="middle" font-size="28" font-weight="800" fill="#2f6b3b">Conuco · how it works</text>
+  <text x="600" y="72" text-anchor="middle" font-size="15" fill="#6d625a">The AI runs on the phone. Only a ~1 KB text record (or a signed SMS) travels.</text>
 
-  <!-- Teléfono -->
-  <rect x="30" y="100" width="420" height="440" rx="22" fill="#fff" stroke="#2f6b3b" stroke-width="2.5"/>
-  <text x="240" y="132" text-anchor="middle" font-size="19" font-weight="800" fill="#2f6b3b">📱 Teléfono del agricultor</text>
-  <text x="240" y="154" text-anchor="middle" font-size="13" fill="#b3261e" font-weight="700">sin internet · sin luz · batería baja</text>
+  <rect x="30" y="100" width="420" height="470" rx="22" fill="#fff" stroke="#2f6b3b" stroke-width="2.5"/>
+  <text x="240" y="132" text-anchor="middle" font-size="19" font-weight="800" fill="#2f6b3b">📱 Farmer's phone</text>
+  <text x="240" y="154" text-anchor="middle" font-size="13" fill="#b3261e" font-weight="700">no internet · no power · low battery</text>
   <g font-size="14" fill="#2a211b">
-    <rect x="55" y="172" width="370" height="52" rx="12" fill="#e5f0e3"/><text x="70" y="194" font-weight="700">1. Habla en sus palabras 🎙️</text><text x="70" y="214" fill="#6d625a">"las hojas están como oxidadas por debajo"</text>
-    <rect x="55" y="234" width="370" height="52" rx="12" fill="#e5f0e3"/><text x="70" y="256" font-weight="700">2. Voz → texto: Whisper (~80 MB)</text><text x="70" y="276" fill="#6d625a">en el dispositivo, WebAssembly</text>
-    <rect x="55" y="296" width="370" height="52" rx="12" fill="#e5f0e3"/><text x="70" y="318" font-weight="700">3. Texto → ficha: clasificador propio (114 KB)</text><text x="70" y="338" fill="#6d625a">lista fija · si duda: "no estoy seguro"</text>
-    <rect x="55" y="358" width="370" height="52" rx="12" fill="#e5f0e3"/><text x="70" y="380" font-weight="700">4. Le repite lo que entendió 🔊</text><text x="70" y="400" fill="#6d625a">confirma o corrige con dibujos</text>
-    <rect x="55" y="420" width="370" height="52" rx="12" fill="#fdf0d2"/><text x="70" y="442" font-weight="700">5. Guarda y espera la señal 💾</text><text x="70" y="462" fill="#6d625a">foto opcional comprimida (~60 KB)</text>
-    <text x="70" y="510" fill="#6d625a" font-size="13">🔒 La nota de voz nunca sale del teléfono</text>
+    <rect x="55" y="172" width="370" height="52" rx="12" fill="#e5f0e3"/><text x="70" y="194" font-weight="700">1. Speaks in their own words 🎙️ (Spanish)</text><text x="70" y="214" fill="#6d625a">"the leaves look rusty underneath"</text>
+    <rect x="55" y="234" width="370" height="52" rx="12" fill="#e5f0e3"/><text x="70" y="256" font-weight="700">2. Voice → text: Whisper (~80 MB, on-device)</text><text x="70" y="276" fill="#6d625a">WebAssembly · ~5 s on an iPhone, offline</text>
+    <rect x="55" y="296" width="370" height="52" rx="12" fill="#e5f0e3"/><text x="70" y="318" font-weight="700">3. Text → record: our classifier (~100 KB/crop)</text><text x="70" y="338" fill="#6d625a">coffee + maize · fixed list · unsure → "ask a person"</text>
+    <rect x="55" y="358" width="370" height="52" rx="12" fill="#e5f0e3"/><text x="70" y="380" font-weight="700">4. Reads back what it understood 🔊</text><text x="70" y="400" fill="#6d625a">farmer confirms, or corrects by tapping a picture</text>
+    <rect x="55" y="420" width="370" height="52" rx="12" fill="#fdf0d2"/><text x="70" y="442" font-weight="700">5. Stores and waits for signal 💾</text><text x="70" y="462" fill="#6d625a">optional photo, compressed (~60 KB, no GPS)</text>
+    <rect x="55" y="482" width="370" height="52" rx="12" fill="#f6f1e8"/><text x="70" y="504" font-weight="700">📞 Basic phone? Call the voice line</text><text x="70" y="524" fill="#6d625a">keypad menu + voice · AI runs at the cooperative</text>
+    <text x="70" y="556" fill="#6d625a" font-size="13">🔒 Voice notes never leave the phone</text>
   </g>
 
-  <!-- Envío -->
   <line x1="450" y1="446" x2="740" y2="446" stroke="#5b3a29" stroke-width="3" marker-end="url(#f)"/>
-  <text x="595" y="420" text-anchor="middle" font-size="15" font-weight="700" fill="#5b3a29">cuando vuelve la señal</text>
-  <text x="595" y="474" text-anchor="middle" font-size="13" fill="#6d625a">datos 2G/3G · o SMS de ~50 caracteres</text>
-  <text x="595" y="494" text-anchor="middle" font-size="10" fill="#6d625a" font-family="ui-monospace,monospace">CNC1 F023 BO 261003 CAF RY E2 D14 LL C3 OK</text>
+  <text x="595" y="420" text-anchor="middle" font-size="15" font-weight="700" fill="#5b3a29">when signal returns</text>
+  <text x="595" y="474" text-anchor="middle" font-size="13" fill="#6d625a">2G/3G data · or a signed ~50-char SMS</text>
+  <text x="595" y="494" text-anchor="middle" font-size="10" fill="#6d625a" font-family="ui-monospace,monospace">CNC1 F023 BO … RY … OK M1A2B3C4</text>
 
-  <!-- Cooperativa -->
-  <rect x="750" y="100" width="420" height="440" rx="22" fill="#fff" stroke="#5b3a29" stroke-width="2.5"/>
-  <text x="960" y="132" text-anchor="middle" font-size="19" font-weight="800" fill="#5b3a29">🏠 Oficina de la cooperativa</text>
-  <text x="960" y="154" text-anchor="middle" font-size="13" fill="#6d625a">laptop + teléfono receptor de SMS (+ panel solar)</text>
+  <rect x="750" y="100" width="420" height="470" rx="22" fill="#fff" stroke="#5b3a29" stroke-width="2.5"/>
+  <text x="960" y="132" text-anchor="middle" font-size="19" font-weight="800" fill="#5b3a29">🏠 Cooperative office</text>
+  <text x="960" y="154" text-anchor="middle" font-size="13" fill="#6d625a">laptop + Android SMS/voice gateway (+ small solar panel)</text>
   <g font-size="14" fill="#2a211b">
-    <rect x="775" y="172" width="370" height="52" rx="12" fill="#f6f1e8"/><text x="790" y="194" font-weight="700">6. Mapa de reportes por zona 🗺️</text><text x="790" y="214" fill="#6d625a">lo que dijo + cómo lo anotó Conuco + foto</text>
-    <rect x="775" y="234" width="370" height="52" rx="12" fill="#fbe3e1"/><text x="790" y="256" font-weight="700">7. Alerta temprana de brote 🚨</text><text x="790" y="276" fill="#6d625a">≥5 reportes · ≥3 fincas · 14 días · misma zona</text>
-    <rect x="775" y="296" width="370" height="52" rx="12" fill="#f6f1e8"/><text x="790" y="318" font-weight="700">8. El técnico revisa y aprueba 👩‍🌾</text><text x="790" y="338" fill="#6d625a">humano en el circuito: nada sale sin aprobar</text>
-    <rect x="775" y="358" width="370" height="52" rx="12" fill="#f6f1e8"/><text x="790" y="380" font-weight="700">9. Valida o corrige reportes ✔</text><text x="790" y="400" fill="#6d625a">cada corrección = nuevo ejemplo de entrenamiento</text>
-    <rect x="775" y="420" width="370" height="52" rx="12" fill="#e5f0e3"/><text x="790" y="442" font-weight="700">10. Reentrena el "paquete regional" 🔁</text><text x="790" y="462" fill="#6d625a">aprende la jerga local de la comunidad</text>
+    <rect x="775" y="172" width="370" height="52" rx="12" fill="#f6f1e8"/><text x="790" y="194" font-weight="700">6. Validate every report 🛡️</text><text x="790" y="214" fill="#6d625a">schema · registered farm · SMS signature · anti-spam</text>
+    <rect x="775" y="234" width="370" height="52" rx="12" fill="#f6f1e8"/><text x="790" y="256" font-weight="700">7. Map of reports by area 🗺️</text><text x="790" y="276" fill="#6d625a">farmer's words + Conuco's record + photo</text>
+    <rect x="775" y="296" width="370" height="52" rx="12" fill="#fbe3e1"/><text x="790" y="318" font-weight="700">8. Early outbreak alert 🚨</text><text x="790" y="338" fill="#6d625a">≥5 reports · ≥3 registered farms · 14 days</text>
+    <rect x="775" y="358" width="370" height="52" rx="12" fill="#f6f1e8"/><text x="790" y="380" font-weight="700">9. Technician reviews and approves 👩‍🌾</text><text x="790" y="400" fill="#6d625a">human in the loop: nothing goes out unapproved</text>
+    <rect x="775" y="420" width="370" height="52" rx="12" fill="#f6f1e8"/><text x="790" y="442" font-weight="700">10. Validates or corrects reports ✔</text><text x="790" y="462" fill="#6d625a">each correction = a new training example</text>
+    <rect x="775" y="482" width="370" height="52" rx="12" fill="#e5f0e3"/><text x="790" y="504" font-weight="700">11. Retrains the regional model pack 🔁</text><text x="790" y="524" fill="#6d625a">learns each community's own words</text>
   </g>
 
-  <!-- Vuelta -->
-  <path d="M960 540 C 960 625, 240 625, 240 548" fill="none" stroke="#2f6b3b" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#fv)"/>
-  <text x="600" y="668" text-anchor="middle" font-size="15" font-weight="700" fill="#2f6b3b">aviso en voz/SMS en palabras sencillas + modelo actualizado (~100 KB)</text>
+  <path d="M960 570 C 960 650, 240 650, 240 578" fill="none" stroke="#2f6b3b" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#fv)"/>
+  <text x="600" y="700" text-anchor="middle" font-size="15" font-weight="700" fill="#2f6b3b">plain-language warning by voice/SMS + updated model pack (~100 KB)</text>
 </svg>
