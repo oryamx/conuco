@@ -9,7 +9,7 @@
 > *Conuco* is the Venezuelan word for a small family farm plot.
 
 ## The problem
-In Venezuela's Andean coffee region, farmers live with daily blackouts (≈98% of households in the Andes report daily outages — Infobae, Sep 2026), weak or no mobile signal, and an extension officer who visits twice a year at best. Coffee yields were reported at 4–8 quintals/ha versus 25–30 possible (Fedeagro, 2020 data).
+In Venezuela's Andean coffee region, farmers live with daily blackouts (≈98% of households in the Andes report daily outages — Infobae, Sep 2026), and weak or no mobile signal. The World Bank brief's farmer, Noor, sees an extension officer twice a year; we have no official figure for Venezuela, but the same gap applies: no record of what happens in the field. Coffee yields were reported at 4–8 quintals/ha versus 25–30 possible (Fedeagro, 2020 data).
 
 When a pest or disease starts, the farmer sees it first — but has no one to tell, no technical vocabulary to describe it, and **no record exists of what is happening in the field**. By the time a technician hears about it, it has spread across the valley. The World Bank brief names this gap directly: *"the binding constraint is the absence of a working farmer registry rather than the absence of an algorithm."*
 
