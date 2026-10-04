@@ -1,7 +1,8 @@
 import { extraer, leerDeVuelta, codigoSMS } from './extract.js';
 import { firmarSMS } from './seguridad.js';
-import { SINTOMAS, sintomasDe } from './lexicon.js';
+import { SINTOMAS, sintomasDe, CONSEJO_HOY, SIN_QUIMICOS } from './lexicon.js';
 import { cargarTodos } from './clasificador.js';
+import { abrirCamara, cerrarCamara, analizarArchivo, CLASES_VISION, UMBRALES_VISION } from './vision.js';
 import { ZONAS, getPerfil, setPerfil, getCola, guardarEnCola, enviarCola, getAlertas, escuchar, registrarFinca, borrarMisDatos } from './store.js';
 
 const $ = (id) => document.getElementById(id);
@@ -171,6 +172,7 @@ function hablar(frase) {
 
 let audioActual = null;
 let fotoActual = null;
+let fraseHoy = '';
 
 // La foto se achica a 640 px y JPEG calidad 0.6 (~40-80 KB) para que pase por una conexión débil.
 async function comprimirFoto(file) {
@@ -189,6 +191,61 @@ $('foto').addEventListener('change', async (e) => {
   const kb = Math.round((fotoActual.length * 3) / 4 / 1024);
   $('pesoFoto').textContent = `Foto original: ${Math.round(f.size / 1024)} KB → enviada: ${kb} KB. El técnico la verá para confirmar.`;
 });
+// ---------- Visión: "Muéstrame la hoja" (video de la cámara → modelo YOLO en el teléfono) ----------
+function procesarVision(res) {
+  let c = CLASES_VISION[res.clase] || CLASES_VISION.otra;
+  // En fotos de campo el modelo confunde tizón y mancha gris (las dos son manchas alargadas):
+  // si las dos tienen peso, no elegimos y lo decimos así.
+  const pr = Object.fromEntries(res.ranking.map((r) => [r.id, r.p / 100]));
+  if (['tizon', 'mancha_gris'].includes(res.clase) && Math.min(pr.tizon || 0, pr.mancha_gris || 0) >= 0.2) {
+    c = { nombre: 'tizón o mancha gris', tecnico: 'tizón foliar del norte o mancha gris (lesiones alargadas; el técnico distingue)', sencillo: 'manchas alargadas en las hojas', enfermedad: true };
+    res = { ...res, p: (pr.tizon || 0) + (pr.mancha_gris || 0) };
+  }
+  const pct = Math.round(res.p * 100);
+  const seguro = res.p >= UMBRALES_VISION.UMBRAL_ALTA ? 'alta' : res.p >= UMBRALES_VISION.UMBRAL_MEDIA ? 'media' : 'baja';
+  const s = SINTOMAS.find((x) => x.id === 'manchas_maiz');
+  const base = extraer('', 'maiz');
+  const enfermedad = c.enfermedad && seguro !== 'baja';
+  const detalle = `[Cámara] Hoja de maíz: ${enfermedad ? 'compatible con ' + c.tecnico : c.tecnico} (${pct}%, ${res.cuadros} cuadro(s))`;
+  registroActual = {
+    ...base,
+    texto_original: detalle,
+    sintoma: enfermedad ? 'manchas_maiz' : 'no_claro',
+    sintoma_tecnico: enfermedad ? `${s.tecnico} · cámara: compatible con ${c.tecnico}` : 'No queda claro: pasa a revisión del técnico',
+    sintoma_sencillo: enfermedad ? c.sencillo : null,
+    confianza: enfermedad ? seguro : 'baja',
+    probabilidad: pct,
+    otros_posibles: res.ranking.slice(1).filter((r) => r.p >= 5).map((r) => `${CLASES_VISION[r.id]?.nombre || r.id} (${r.p}%)`),
+    ranking: [], metodo: 'vision', pistas: [`modelo de visión, ${res.ms} ms por cuadro`],
+    parte: 'hoja', parte_nombre: 'Hoja',
+    fecha: Date.now(), tiene_audio: false,
+  };
+  pintarIconos('maiz');
+  audioActual = null;
+  fotoActual = res.foto || null;
+  if (fotoActual) { $('previa').src = fotoActual; $('cajaFoto').classList.remove('oculto'); $('pesoFoto').textContent = 'Cuadro del video que analizó la cámara. El técnico lo verá para confirmar.'; }
+  pintarResultado();
+  if (res.clase === 'sana' && res.p >= UMBRALES_VISION.UMBRAL_MEDIA) {
+    $('entendi').textContent = 'La hoja se ve sana. Si ves otra cosa en tus matas, cuéntamelo con la voz.';
+    hablar('La hoja se ve sana. Si ves otra cosa en tus matas, cuéntamelo con la voz.');
+  } else if (!enfermedad) {
+    $('entendi').textContent = 'No estoy seguro de lo que veo. Si lo confirmas, mando la foto al técnico para que la revise.';
+    hablar('No estoy seguro de lo que veo. Si lo confirmas, mando la foto al técnico para que la revise.');
+  } else {
+    const frase = `En la hoja veo algo compatible con ${c.nombre}: ${c.sencillo}.` + (seguro === 'media' ? ' No estoy del todo seguro; el técnico lo va a revisar.' : '') + ' ¿Lo reporto?';
+    $('entendi').textContent = frase;
+    hablar(frase);
+  }
+  $('dijo').textContent = '📷 ' + detalle.replace('[Cámara] ', '');
+  $('etiquetaDijo').textContent = 'Lo que vio la cámara:';
+}
+$('btnCamara').addEventListener('click', () => abrirCamara(procesarVision));
+$('btnCamCerrar').addEventListener('click', () => cerrarCamara(true));
+$('videoArchivo').addEventListener('change', (e) => {
+  const f = e.target.files?.[0]; if (!f) return;
+  analizarArchivo(f, procesarVision).finally(() => { e.target.value = ''; });
+});
+
 function procesar(texto, blob) {
   registroActual = { ...extraer(texto, getPerfil()?.cultivo || 'cafe'), fecha: Date.now(), tiene_audio: !!blob };
   pintarIconos(registroActual.cultivo);
@@ -201,8 +258,10 @@ function procesar(texto, blob) {
 function pintarResultado() {
   const r = registroActual;
   $('vistaGuardado').classList.add('oculto');
+  $('vistaHoy').classList.add('oculto');
   $('vistaResultado').classList.remove('oculto');
   $('corregir').classList.add('oculto');
+  $('etiquetaDijo').textContent = 'Lo que dijiste:';
   $('dijo').textContent = '“' + r.texto_original + '”';
   $('entendi').textContent = leerDeVuelta(r).replace('¿Entendí bien? ', '');
   const conf = $('conf');
@@ -231,6 +290,7 @@ function mostrarDibujos(ranking) {
   $('corregir').classList.remove('oculto');
 }
 
+$('btnOirHoy').addEventListener('click', () => fraseHoy && hablar(fraseHoy));
 $('btnOir').addEventListener('click', () => registroActual && hablar(leerDeVuelta(registroActual)));
 $('btnNo').addEventListener('click', () => {
   mostrarDibujos(registroActual?.ranking || []);
@@ -266,7 +326,14 @@ $('btnSi').addEventListener('click', async () => {
   $('msgGuardado').textContent = sinSenal()
     ? 'No hay señal: se enviará solo cuando vuelva.'
     : 'Enviando a tu cooperativa…';
-  hablar(sinSenal() ? 'Listo, lo guardé. Lo envío cuando vuelva la señal.' : 'Listo, lo guardé y lo estoy enviando.');
+  // Consejo inmediato para Noor (lista fija, sin químicos): no tiene que esperar a la cooperativa.
+  const c = CONSEJO_HOY[r.sintoma] || CONSEJO_HOY.no_claro;
+  $('hoyPaso').textContent = c.hoy;
+  $('hoyTecnico').textContent = c.tecnico;
+  $('hoySinQuimicos').textContent = SIN_QUIMICOS;
+  $('vistaHoy').classList.remove('oculto');
+  fraseHoy = `Qué puedes hacer hoy: ${c.hoy} ${c.tecnico} ${SIN_QUIMICOS}`;
+  hablar((sinSenal() ? 'Listo, lo guardé. Lo envío cuando vuelva la señal. ' : 'Listo, lo guardé y lo estoy enviando. ') + fraseHoy);
   registroActual = null; fotoActual = null;
   $('texto').value = '';
   pintarCola();
@@ -314,3 +381,6 @@ function iniciar() {
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 speechSynthesis?.getVoices();
 iniciar();
+
+// Deja listo el motor de la cámara en caché mientras hay señal (después funciona en modo avión).
+if (navigator.onLine) fetch('https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0-dev.20250409-89f8206ba4/dist/ort.webgpu.min.mjs').catch(() => {});

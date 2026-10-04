@@ -1,5 +1,5 @@
 {
- "fecha": "2026-10-03T22:48:20.918Z",
+ "fecha": "2026-10-04T03:56:16.868Z",
  "pasan": 21,
  "total": 21,
  "resultados": [
@@ -31,7 +31,7 @@
    "id": "T4",
    "nombre": "SMS legítimo con firma válida se acepta",
    "paso": true,
-   "detalle": "CNC1 F125 BO 261003 CAF RY E0 D0 - C3 OK MFC1181FF"
+   "detalle": "CNC1 F121 BO 261004 CAF RY E0 D0 - C3 OK M6E9E3088"
   },
   {
    "id": "T5",

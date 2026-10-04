@@ -2,7 +2,7 @@
 // Flujo: menú por teclado → nota de voz → IA (Whisper + clasificador) → confirmación por teclado → reporte.
 // Si la IA no entiende, el agricultor elige el problema con el teclado (funciona aunque falle la voz).
 import { extraer } from './extract.js';
-import { sintomasDe, SINTOMAS } from './lexicon.js';
+import { sintomasDe, SINTOMAS, CONSEJO_HOY, SIN_QUIMICOS } from './lexicon.js';
 import { cargarTodos } from './clasificador.js';
 import { ZONAS, getRegistro, registrarFinca, recibirReporte } from './store.js';
 import { esc } from './seguridad.js';
@@ -162,7 +162,8 @@ async function guardar() {
     extension: registro.extension ?? null, dias: registro.dias ?? null, clima: registro.clima ?? null,
     canal: 'llamada', confirmado: true, corregido: !!registro.corregido,
   }, 'llamada');
-  if (res.ok) await decir('Gracias. Su reporte llegó a la cooperativa. Si hay un aviso para su zona, lo llamaremos. Hasta luego.');
+  const c = CONSEJO_HOY[registro.sintoma] || CONSEJO_HOY.no_claro;
+  if (res.ok) await decir(`Gracias. Su reporte llegó a la cooperativa. Lo que puede hacer hoy: ${c.hoy} ${c.tecnico} ${SIN_QUIMICOS} Si hay un aviso para su zona, lo llamaremos. Hasta luego.`);
   else await decir('Lo sentimos, no pudimos guardar su reporte. Intente más tarde.');
   colgar();
 }

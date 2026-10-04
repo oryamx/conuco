@@ -163,3 +163,25 @@ export function extraerDias(t) {
   if (/mes pasado/.test(t)) return 30;
   return null;
 }
+
+// ---------- "Qué puedes hacer hoy": consejo inmediato, de una lista fija ----------
+// Pasos seguros y sin agroquímicos. BORRADOR para el hackathon: debe validarse con agrónomos de cada zona.
+export const SIN_QUIMICOS = 'No apliques ningún producto químico sin consultar al técnico.';
+export const CONSEJO_HOY = {
+  roya: { hoy: 'Voltea varias hojas de distintas matas y mira si tienen polvillo naranja por debajo. Anota en cuántas lo ves.', tecnico: 'Si lo ves en muchas matas o las hojas se caen rápido, pide la visita del técnico.' },
+  broca: { hoy: 'Recoge los granos caídos y los que tengan huequito. No los dejes en el suelo de la finca.', tecnico: 'Si encuentras huequitos en muchos granos, avísale al técnico antes de la cosecha.' },
+  minador: { hoy: 'Marca una mata con manchas secas para comparar en unos días si aumentan.', tecnico: 'Si las manchas se extienden a muchas matas, avísale al técnico.' },
+  ojo_de_gallo: { hoy: 'Fíjate si las manchas redondas están sobre todo donde hay mucha sombra y humedad.', tecnico: 'Pregúntale al técnico cómo manejar la sombra de ese lote.' },
+  mancha_hierro: { hoy: 'Revisa si también hay manchas en los granos y anota en qué lote las ves.', tecnico: 'Si los granos se están manchando, avísale al técnico.' },
+  muerte_descendente: { hoy: 'Marca las matas con ramas secas para poder mostrárselas al técnico.', tecnico: 'Si son muchas matas, pide la visita del técnico.' },
+  come_hojas: { hoy: 'Busca caminos de bachaco o gusanos cerca de las matas comidas.', tecnico: 'Avísale al técnico antes de usar cualquier producto.' },
+  nutricion: { hoy: 'Anota qué lotes se ven más amarillos o débiles.', tecnico: 'El técnico te puede ayudar a revisar el suelo.' },
+  cogollero: { hoy: 'Revisa el cogollo de 20 matas jóvenes y cuenta cuántas tienen huecos y aserrín.', tecnico: 'Comparte ese número con el técnico antes de aplicar cualquier producto.' },
+  raiz_maiz: { hoy: 'Arranca con cuidado una mata caída y mira cómo está la raíz.', tecnico: 'Cuéntale al técnico lo que encontraste.' },
+  mazorca: { hoy: 'Separa las mazorcas podridas de las sanas. No las mezcles.', tecnico: 'Si son muchas, avísale al técnico.' },
+  gorgojo: { hoy: 'Revisa los sacos y separa el maíz que tenga gorgojo.', tecnico: 'Pregúntale al técnico cómo guardar mejor el grano.' },
+  sequia_maiz: { hoy: 'Anota qué lotes están más afectados por la falta de agua.', tecnico: 'El técnico te puede orientar sobre esos lotes.' },
+  nutricion_maiz: { hoy: 'Anota qué lotes se ven más amarillos o débiles.', tecnico: 'El técnico te puede ayudar a revisar el suelo.' },
+  manchas_maiz: { hoy: 'Toma una foto de las hojas manchadas y anota cuántas matas las tienen.', tecnico: 'El técnico revisará la foto con tu reporte.' },
+  no_claro: { hoy: 'Toma una foto de lo que ves y fíjate si le pasa a otras matas.', tecnico: 'El técnico revisará tu reporte.' },
+};

@@ -1,0 +1,83 @@
+{
+ "modelo": "YOLO26n-cls (Ultralytics) afinado para hojas de maíz",
+ "clases": [
+  "mancha_gris",
+  "otra",
+  "roya",
+  "sana",
+  "tizon"
+ ],
+ "imgsz": 224,
+ "entrada": "RGB/255, recorte central cuadrado, NCHW float32",
+ "salida": "probabilidades (softmax)",
+ "parametros": 1532429,
+ "onnx_bytes": 6176418,
+ "datos": {
+  "PlantDoc": "github.com/pratikkayal/PlantDoc-Dataset (CC BY 4.0) — maíz enfermo + hojas de otros cultivos",
+  "PlantVillage": "github.com/spMohanty/PlantVillage-Dataset — maíz sano y enfermo (laboratorio)"
+ },
+ "evaluacion": {
+  "laboratorio_PlantVillage_no_vistas": {
+   "exactitud": 0.958,
+   "n": 240,
+   "por_clase": {
+    "mancha_gris": [
+     56,
+     60
+    ],
+    "roya": [
+     60,
+     60
+    ],
+    "sana": [
+     60,
+     60
+    ],
+    "tizon": [
+     54,
+     60
+    ]
+   }
+  },
+  "campo_PlantDoc_test": {
+   "exactitud": 0.831,
+   "n": 59,
+   "por_clase": {
+    "mancha_gris": [
+     1,
+     4
+    ],
+    "otra": [
+     33,
+     33
+    ],
+    "roya": [
+     9,
+     10
+    ],
+    "tizon": [
+     6,
+     12
+    ]
+   },
+   "confusion": {
+    "mancha_gris": {
+     "tizon": 3,
+     "mancha_gris": 1
+    },
+    "otra": {
+     "otra": 33
+    },
+    "roya": {
+     "roya": 9,
+     "mancha_gris": 1
+    },
+    "tizon": {
+     "tizon": 6,
+     "mancha_gris": 6
+    }
+   }
+  }
+ },
+ "licencia": "AGPL-3.0 (derivado de pesos de Ultralytics). El resto de Conuco es MIT."
+}

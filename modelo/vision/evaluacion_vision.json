@@ -1,0 +1,89 @@
+{
+ "test_lab": {
+  "accuracy": 0.958,
+  "por_clase": {
+   "mancha_gris": [
+    56,
+    60
+   ],
+   "roya": [
+    60,
+    60
+   ],
+   "sana": [
+    60,
+    60
+   ],
+   "tizon": [
+    54,
+    60
+   ]
+  },
+  "confusion": {
+   "mancha_gris": {
+    "mancha_gris": 56,
+    "tizon": 4
+   },
+   "roya": {
+    "roya": 60
+   },
+   "sana": {
+    "sana": 60
+   },
+   "tizon": {
+    "tizon": 54,
+    "mancha_gris": 6
+   }
+  }
+ },
+ "test_field": {
+  "accuracy": 0.831,
+  "por_clase": {
+   "mancha_gris": [
+    1,
+    4
+   ],
+   "otra": [
+    33,
+    33
+   ],
+   "roya": [
+    9,
+    10
+   ],
+   "tizon": [
+    6,
+    12
+   ]
+  },
+  "confusion": {
+   "mancha_gris": {
+    "tizon": 3,
+    "mancha_gris": 1
+   },
+   "otra": {
+    "otra": 33
+   },
+   "roya": {
+    "roya": 9,
+    "mancha_gris": 1
+   },
+   "tizon": {
+    "tizon": 6,
+    "mancha_gris": 6
+   }
+  }
+ },
+ "onnx_bytes": 6176418,
+ "clases": [
+  "mancha_gris",
+  "otra",
+  "roya",
+  "sana",
+  "tizon"
+ ],
+ "acuerdo_onnx": [
+  299,
+  299
+ ]
+}

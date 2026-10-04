@@ -11,8 +11,8 @@ Conuco collects reports from farmers through three channels (app, SMS, voice cal
 | Replayed SMS | Re-sending a valid SMS to inflate counts | Used signatures are remembered and rejected |
 | Fake outbreak (alert flooding) | One farm sends 10 reports; or 6 unregistered numbers report the same thing | Only **registered** farms count; max 3 reports/farm/day and max 2 reports/farm per possible outbreak; ≥5 reports **and** ≥3 farms; **a technician must approve every alert** |
 | Training-data poisoning | Spam phrases end up in the retraining set | Only phrases **validated by a technician** are exported; export sanitizes separators/new lines |
-| Supply chain | Speech model changed upstream | Whisper loaded only from an allow-list at a **pinned commit**; JS libraries vendored (transformers.js 3.7.1, Leaflet 1.9.4) |
-| Privacy | Location in photo metadata; voice notes; shared phones | Photos re-encoded to JPEG (drops EXIF/GPS); **voice notes never leave the phone**; reports carry a farm code, not a name; consent at registration; "Delete my data" button |
+| Supply chain | Speech or vision model changed upstream | Whisper loaded only from an allow-list at a **pinned commit**; the vision model is a **local file** of the site (`maiz_hojas.onnx`), never downloaded from third parties; JS libraries vendored (transformers.js 3.7.1, Leaflet 1.9.4) or loaded at a pinned version (ONNX Runtime Web 1.22.0-dev.20250409) |
+| Privacy | Location in photo metadata; voice notes; camera video; shared phones | Photos re-encoded to JPEG (drops EXIF/GPS); **camera video is analyzed on the phone and never stored or sent** (only the chosen frame, as a 640 px JPEG, if the farmer reports); **voice notes never leave the phone**; reports carry a farm code, not a name; consent at registration; "Delete my data" button |
 | Caller-ID spoofing (voice line) | Calling from a spoofed number | Unregistered numbers are accepted but **don't count for alerts**; human approval of alerts. Next step: a short PIN per farm |
 
 ## Automated tests — `pruebas/seguridad.test.mjs` (Playwright + Chromium)

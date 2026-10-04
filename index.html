@@ -2,11 +2,11 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.tile.openstreetmap.org; connect-src 'self' https://huggingface.co https://*.huggingface.co https://*.hf.co https://cdn.jsdelivr.net; media-src 'self' blob:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.tile.openstreetmap.org; connect-src 'self' https://huggingface.co https://*.huggingface.co https://*.hf.co https://cdn.jsdelivr.net; media-src 'self' blob: mediastream:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'none'">
   <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Conuco</title>
-  <meta name="description" content="Cuaderno de campo por voz que funciona sin internet ni luz.">
+  <meta name="description" content="Cuaderno de campo por voz que funciona sin internet.">
   <meta name="theme-color" content="#2f6b3b">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="conuco.svg" type="image/svg+xml">
@@ -26,7 +26,7 @@
   <!-- Registro inicial: crea el "registro de agricultores" que hoy no existe -->
   <section id="vistaPerfil" class="tarjeta oculto">
     <h2>👋 Bienvenido a Conuco</h2>
-    <p>Conuco es tu cuaderno de campo. Le hablas como a un vecino y él lo anota para el técnico de tu cooperativa. Funciona <b>sin internet y sin luz</b>.</p>
+    <p>Conuco es tu cuaderno de campo. Le hablas como a un vecino y él lo anota para el técnico de tu cooperativa. Funciona <b>sin internet</b>.</p>
     <label for="finca">¿Cómo se llama tu finca o conuco?</label>
     <input id="finca" type="text" placeholder="Ej: La Esperanza" autocomplete="off">
     <label for="cultivoPerfil">¿Qué siembras principalmente?</label>
@@ -55,8 +55,24 @@
       </details>
     </section>
 
+    <section id="vistaVision" class="tarjeta">
+      <h3 style="margin:0 0 4px">📷 Muéstrame la hoja <span class="pista">(maíz · prueba)</span></h3>
+      <p class="pista">Apunta la cámara a una hoja de maíz. Conuco mira el video en el teléfono, sin internet, y te dice con qué se parece. El técnico confirma.</p>
+      <div class="fila" style="margin-top:10px">
+        <button id="btnCamara" class="btn sec">📷 Abrir cámara</button>
+        <label class="btn sec" for="videoArchivo">🎞️ Analizar video o foto</label>
+      </div>
+      <input id="videoArchivo" type="file" accept="video/*,image/*" class="oculto">
+      <div id="camaraCaja" class="oculto" style="margin-top:10px">
+        <video id="camVideo" class="cam oculto" playsinline muted></video>
+        <p id="camEstado" class="pista"></p>
+        <div id="camBarras"></div>
+        <button id="btnCamCerrar" class="btn no" style="margin-top:8px">Cerrar</button>
+      </div>
+    </section>
+
     <section id="vistaResultado" class="tarjeta oculto">
-      <div class="pista">Lo que dijiste:</div>
+      <div class="pista" id="etiquetaDijo">Lo que dijiste:</div>
       <div id="dijo" class="dijo"></div>
       <div style="margin-top:12px" class="pista">Lo que entendí <span id="conf" class="conf"></span></div>
       <div id="entendi" class="entendi"></div>
@@ -84,6 +100,14 @@
       <p id="msgGuardado">Se enviará solo cuando vuelva la señal.</p>
       <p class="pista">¿Sin datos pero con señal de llamada? Este SMS lleva tu reporte completo:</p>
       <div id="sms" class="sms"></div>
+    </section>
+
+    <section id="vistaHoy" class="tarjeta aviso oculto">
+      <h3>🌱 Qué puedes hacer hoy</h3>
+      <p id="hoyPaso" style="font-weight:600"></p>
+      <p id="hoyTecnico"></p>
+      <p class="pista" id="hoySinQuimicos"></p>
+      <button id="btnOirHoy" class="btn sec">🔊 Escuchar otra vez</button>
     </section>
 
     <section class="tarjeta">
