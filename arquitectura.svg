@@ -12,7 +12,7 @@
   <text x="240" y="154" text-anchor="middle" font-size="13" fill="#b3261e" font-weight="700">no Wi-Fi · weak or no signal · shared phone</text>
   <g font-size="14" fill="#2a211b">
     <rect x="55" y="172" width="370" height="52" rx="12" fill="#e5f0e3"/><text x="70" y="194" font-weight="700">1. Speaks 🎙️ — or shows the leaf 📷</text><text x="70" y="214" fill="#6d625a">"the leaves look rusty underneath" · camera video</text>
-    <rect x="55" y="234" width="370" height="52" rx="12" fill="#e5f0e3"/><text x="70" y="256" font-weight="700">2. Whisper (voice) · YOLO26n-cls (video, 6 MB)</text><text x="70" y="276" fill="#6d625a">WebAssembly, on-device · offline</text>
+    <rect x="55" y="234" width="370" height="52" rx="12" fill="#e5f0e3"/><text x="70" y="256" font-weight="700">2. Whisper (voice) · MobileNetV3 (video, 6 MB)</text><text x="70" y="276" fill="#6d625a">WebAssembly, on-device · offline</text>
     <rect x="55" y="296" width="370" height="52" rx="12" fill="#e5f0e3"/><text x="70" y="318" font-weight="700">3. Text → record: our classifier (~100 KB/crop)</text><text x="70" y="338" fill="#6d625a">coffee + maize · fixed list · unsure → "ask a person"</text>
     <rect x="55" y="358" width="370" height="52" rx="12" fill="#e5f0e3"/><text x="70" y="380" font-weight="700">4. Reads back what it understood 🔊</text><text x="70" y="400" fill="#6d625a">farmer confirms, or corrects by tapping a picture</text>
     <rect x="55" y="420" width="370" height="52" rx="12" fill="#fdf0d2"/><text x="70" y="442" font-weight="700">5. Stores and waits for signal 💾</text><text x="70" y="462" fill="#6d625a">optional photo, compressed (~60 KB, no GPS)</text>

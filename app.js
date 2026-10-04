@@ -191,7 +191,7 @@ $('foto').addEventListener('change', async (e) => {
   const kb = Math.round((fotoActual.length * 3) / 4 / 1024);
   $('pesoFoto').textContent = `Foto original: ${Math.round(f.size / 1024)} KB → enviada: ${kb} KB. El técnico la verá para confirmar.`;
 });
-// ---------- Visión: "Muéstrame la hoja" (video de la cámara → modelo YOLO en el teléfono) ----------
+// ---------- Visión: "Muéstrame la hoja" (video de la cámara → modelo MobileNetV3 en el teléfono) ----------
 function procesarVision(res) {
   let c = CLASES_VISION[res.clase] || CLASES_VISION.otra;
   // En fotos de campo el modelo confunde tizón y mancha gris (las dos son manchas alargadas):

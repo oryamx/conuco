@@ -1,5 +1,5 @@
 {
- "modelo": "YOLO26n-cls (Ultralytics) afinado para hojas de maíz",
+ "modelo": "MobileNetV3-small (timm, pesos ImageNet Apache-2.0) afinado para hojas de maíz",
  "clases": [
   "mancha_gris",
   "otra",
@@ -8,21 +8,21 @@
   "tizon"
  ],
  "imgsz": 224,
- "entrada": "RGB/255, recorte central cuadrado, NCHW float32",
+ "entrada": "RGB/255, recorte central cuadrado, NCHW float32 (la normalización va dentro del modelo)",
  "salida": "probabilidades (softmax)",
- "parametros": 1532429,
- "onnx_bytes": 6176418,
+ "parametros": 1522981,
+ "onnx_bytes": 6120092,
  "datos": {
   "PlantDoc": "github.com/pratikkayal/PlantDoc-Dataset (CC BY 4.0) — maíz enfermo + hojas de otros cultivos",
   "PlantVillage": "github.com/spMohanty/PlantVillage-Dataset — maíz sano y enfermo (laboratorio)"
  },
  "evaluacion": {
   "laboratorio_PlantVillage_no_vistas": {
-   "exactitud": 0.958,
+   "accuracy": 0.967,
    "n": 240,
    "por_clase": {
     "mancha_gris": [
-     56,
+     58,
      60
     ],
     "roya": [
@@ -37,10 +37,27 @@
      54,
      60
     ]
+   },
+   "confusion": {
+    "mancha_gris": {
+     "mancha_gris": 58,
+     "tizon": 2
+    },
+    "roya": {
+     "roya": 60
+    },
+    "sana": {
+     "sana": 60
+    },
+    "tizon": {
+     "tizon": 54,
+     "mancha_gris": 5,
+     "roya": 1
+    }
    }
   },
   "campo_PlantDoc_test": {
-   "exactitud": 0.831,
+   "accuracy": 0.831,
    "n": 59,
    "por_clase": {
     "mancha_gris": [
@@ -48,7 +65,7 @@
      4
     ],
     "otra": [
-     33,
+     32,
      33
     ],
     "roya": [
@@ -56,7 +73,7 @@
      10
     ],
     "tizon": [
-     6,
+     7,
      12
     ]
    },
@@ -66,18 +83,29 @@
      "mancha_gris": 1
     },
     "otra": {
-     "otra": 33
+     "otra": 32,
+     "tizon": 1
     },
     "roya": {
      "roya": 9,
      "mancha_gris": 1
     },
     "tizon": {
-     "tizon": 6,
-     "mancha_gris": 6
+     "tizon": 7,
+     "roya": 1,
+     "otra": 1,
+     "mancha_gris": 3
     }
    }
-  }
+  },
+  "campo_maiz_nombre_exacto": [
+   17,
+   26
+  ],
+  "campo_maiz_enfermas_llamadas_sanas": [
+   0,
+   26
+  ]
  },
- "licencia": "AGPL-3.0 (derivado de pesos de Ultralytics). El resto de Conuco es MIT."
+ "licencia": "Apache-2.0 (pesos base de timm). Todo Conuco queda con licencias permisivas."
 }

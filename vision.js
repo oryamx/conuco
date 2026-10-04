@@ -1,5 +1,5 @@
 // Conuco · "Muéstrame la hoja": análisis de video en el teléfono.
-// La cámara (o un video grabado) se mira cuadro por cuadro con un modelo YOLO pequeño;
+// La cámara (o un video grabado) se mira cuadro por cuadro con un modelo de visión pequeño (MobileNetV3);
 // se promedian varios cuadros y solo se da una respuesta cuando es estable.
 // No diagnostica: dice con qué es "compatible" y el técnico confirma.
 

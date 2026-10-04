@@ -1,5 +1,5 @@
 // Conuco · visión en el teléfono (Web Worker).
-// Modelo: YOLO26n-cls afinado con hojas de maíz (PlantDoc + PlantVillage), exportado a ONNX.
+// Modelo: MobileNetV3-small afinado con hojas de maíz (PlantDoc + PlantVillage), exportado a ONNX (6 MB).
 // Corre con ONNX Runtime Web (WebAssembly), sin internet una vez guardado en caché.
 // ONNX Runtime Web, versión fija (la misma que trae transformers.js 3.7.1). El service worker la guarda para usarla sin internet.
 const ORT = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0-dev.20250409-89f8206ba4/dist/ort.webgpu.min.mjs';
